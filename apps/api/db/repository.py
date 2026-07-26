@@ -15,7 +15,33 @@ def create_document(original_filename: str) -> str:
     conn.close()
     return document_id
 
+def save_message(document_id: str, role: str, content: str) -> None:
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO messages (id, document_id, role, content) VALUES (%s, %s, %s, %s)",
+        (str(uuid.uuid4()), document_id, role, content),
+    )
+    conn.commit()
+    cur.close()
+    conn.close()
 
+
+def get_recent_messages(document_id: str, limit: int = 6) -> list[dict]:
+    """Most recent turns, oldest first — this is the compact context
+    window from Phase 7, not the full history."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT role, content FROM messages
+           WHERE document_id = %s
+           ORDER BY created_at DESC LIMIT %s""",
+        (document_id, limit),
+    )
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return [{"role": r, "content": c} for r, c in reversed(rows)]
 def create_version(document_id, storage_key, page_count, diff_summary, parent_version_id=None):
     version_id = str(uuid.uuid4())
     conn = get_connection()
