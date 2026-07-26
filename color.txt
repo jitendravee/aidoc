@@ -1,0 +1,13 @@
+| Purpose           | Color        | Hex         |
+| ----------------- | ------------ | ----------- |
+| Primary           | Blue         | **#2563EB** |
+| Hover             | Dark Blue    | **#1D4ED8** |
+| Background        | Off White    | **#FAFAFA** |
+| Surface           | White        | **#FFFFFF** |
+| Secondary Surface | Light Gray   | **#F5F5F5** |
+| Border            | Gray         | **#E5E7EB** |
+| Text              | Almost Black | **#111827** |
+| Secondary Text    | Gray         | **#6B7280** |
+| Success           | Green        | **#16A34A** |
+| Warning           | Amber        | **#F59E0B** |
+| Error             | Red          | **#DC2626** |
