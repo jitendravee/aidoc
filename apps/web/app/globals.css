@@ -59,6 +59,7 @@
   --text-2xl: 1.5rem;     /* 24px */
   --text-3xl: 1.875rem;   /* 30px */
   --text-4xl: 2.25rem;    /* 36px */
+  --text-6xl: 4rem;    /* 36px */
 
   /* ===========================
      Font Weights
@@ -146,10 +147,12 @@
   --text-2xl: var(--text-2xl);
   --text-3xl: var(--text-3xl);
   --text-4xl: var(--text-4xl);
+    --text-6xl: var(--text-6xl);
+
 }
 
 /* Optional Dark Theme */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #111827;
     --foreground: #f9fafb;
@@ -165,7 +168,7 @@
     --primary: #3b82f6;
     --primary-hover: #60a5fa;
   }
-}
+} */
 
 /* Base Styles */
 body {
@@ -184,6 +187,5 @@ h4,
 h5,
 h6 {
   font-family: var(--font-heading);
-  font-weight: 700;
   color: var(--text);
 }
