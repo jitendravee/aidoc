@@ -1,8 +1,9 @@
+// lib/hooks/useSendMessage.ts
 import { useMutation } from "@tanstack/react-query";
-import { sendWorkspaceMessage } from "@/lib/api/messages";
+import { sendMessage } from "@/lib/api/messages";
 
-export function useSendWorkspaceMessage(documentIds: string[]) {
+export function useSendMessage(documentIds: string[]) {
   return useMutation({
-    mutationFn: (message: string) => sendWorkspaceMessage(documentIds, message),
+    mutationFn: (message: string) => sendMessage(documentIds, message),
   });
 }

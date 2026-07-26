@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useSendWorkspaceMessage } from "@/lib/hooks/useSendWorkspaceMessage";
+import { useSendMessage } from "@/lib/hooks/useSendWorkspaceMessage";
 
 interface ChatEntry {
   role: "user" | "assistant";
@@ -19,7 +19,7 @@ export default function WorkspacePage() {
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<ChatEntry[]>([]);
 
-  const sendMessage = useSendWorkspaceMessage(documentIds);
+  const sendMessage = useSendMessage(documentIds);
 
   function handleSend() {
     if (!input.trim()) return;
