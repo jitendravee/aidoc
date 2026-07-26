@@ -1,0 +1,79 @@
+# ---------- Python / Backend ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# venv
+venv/
+env/
+ENV/
+.venv/
+
+# environment variables / secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.hypothesis/
+
+# type checkers / linters cache
+.mypy_cache/
+.ruff_cache/
+.dmypy.json
+
+# our own scratch/cache dirs
+cache/
+scratch/
+storage/
+
+# ---------- Next.js / Frontend ----------
+apps/web/node_modules/
+apps/web/.next/
+apps/web/out/
+apps/web/build/
+apps/web/.turbo/
+apps/web/next-env.d.ts
+apps/web/.env
+apps/web/.env.local
+apps/web/.env.*.local
+apps/web/npm-debug.log*
+apps/web/yarn-debug.log*
+apps/web/yarn-error.log*
+apps/web/.pnpm-debug.log*
+
+# ---------- Editors / OS ----------
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ---------- Logs ----------
+logs/
+*.log
