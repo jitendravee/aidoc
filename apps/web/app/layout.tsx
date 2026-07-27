@@ -3,6 +3,7 @@ import { Inter, Sora } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/lib/providers/QueryProvider";
 import { Navbar } from "@/components/ui/navbar";
+import { Footer } from "@/components/ui/Footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -34,7 +35,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <QueryProvider>
           <Navbar />
-          {children}</QueryProvider>
+          {children}
+          <Footer />
+          </QueryProvider>
       </body>
     </html>
   );

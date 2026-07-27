@@ -5,9 +5,21 @@ from workers.tools.base import ToolError
 
 
 def execute_plan(plan: dict, doc_paths: dict[str, str], cache_dir: str) -> dict:
+    plan_type = plan.get("type", "operations")
+
+    if plan_type == "chat":
+        return {"status": "chat", "message": plan.get("message", "")}
+
+    if plan_type == "unsupported":
+        return {"status": "unsupported", "message": plan.get("message", "")}
+
+    if plan_type == "clarification":
+        return {"status": "clarification_needed", "question": plan.get("message")}
+
     operations = plan.get("operations", [])
     if not operations:
-        return {"status": "clarification_needed", "question": plan.get("clarification")}
+        return {"status": "clarification_needed", "question": plan.get("clarification", "Could you clarify what you'd like to do?")}
+
 
     single_doc_ops = [op for op in operations if "target" in op]
     merge_ops = [op for op in operations if op["tool"] == "merge_pdfs"]

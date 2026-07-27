@@ -4,6 +4,7 @@
 import { useRouter } from "next/navigation";
 import { Hero } from "@/components/home/hero";
 import { useUploadMultipleDocuments } from "@/lib/hooks/useUploadMultipleDocuments";
+import { HowItWorks } from "@/components/home/HowItWorks";
 
 export default function Page() {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function Page() {
     <main className="w-full">
       <div className="max-w-360 mx-auto px-4 md:px-8 xl:px-30 py-6 lg:py-8 ">
         <Hero onFilesSelected={handleFilesSelected} isUploading={uploadDocuments.isPending} />
+        <HowItWorks />
       </div>
     </main>
   );

@@ -26,23 +26,38 @@ async def send_message(body: SendMessageRequest):
     os.makedirs(CACHE_DIR, exist_ok=True)
 
     primary_doc_id = body.document_ids[0]
-    save_message(body.workspace_id, "user", body.message)
+    save_message(primary_doc_id, "user", body.message)
     history = get_recent_messages(primary_doc_id, limit=6)
 
-    doc_paths = {}
+    # page counts only — no downloads yet, planner doesn't need file bytes
+    doc_meta = {}
     documents_for_planner = []
     label_to_doc_id = {}
-
     for i, doc_id in enumerate(body.document_ids, start=1):
         label = f"doc_{i}"
         label_to_doc_id[label] = doc_id
         head = get_head_version(doc_id)
-        path = os.path.join(CACHE_DIR, f"{label}_{uuid.uuid4().hex}.pdf")
-        download_file(head["storage_key"], path)
-        doc_paths[label] = path
+        doc_meta[label] = head
         documents_for_planner.append({"label": label, "page_count": head["page_count"]})
 
     result_plan = plan(body.message, documents_for_planner, history=history)
+
+    if result_plan["type"] in ("chat", "unsupported", "clarification"):
+        reply_text = result_plan.get("message", "")
+        save_message(primary_doc_id, "assistant", reply_text)
+        return {
+            "status": "clarification_needed" if result_plan["type"] == "clarification" else result_plan["type"],
+            "question": reply_text if result_plan["type"] == "clarification" else None,
+            "message": reply_text,
+        }
+
+    # only NOW download files, since we know an actual edit is happening
+    doc_paths = {}
+    for label, head in doc_meta.items():
+        path = os.path.join(CACHE_DIR, f"{label}_{uuid.uuid4().hex}.pdf")
+        download_file(head["storage_key"], path)
+        doc_paths[label] = path
+
     result = execute_plan(result_plan, doc_paths, CACHE_DIR)
 
     if result["status"] != "success":
