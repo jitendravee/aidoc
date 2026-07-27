@@ -1,5 +1,11 @@
 import Text from "@/components/ui/Text";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "Terms of Use",
+  description: "The terms governing your use of FlowPDF's PDF editing tools.",
+  alternates: { canonical: "https://flowpdf.online/terms" },
+};
 const sections = [
   {
     title: "1. What FlowPDF does",

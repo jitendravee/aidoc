@@ -20,11 +20,35 @@ export default function Page() {
   }
 
   return (
+        <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            name: "FlowPDF",
+            applicationCategory: "BusinessApplication",
+            operatingSystem: "Web",
+            url: "https://flowpdf.online",
+            description:
+              "Edit PDFs by chatting in plain English — rotate, delete, and merge pages with no sign-up required.",
+            offers: {
+              "@type": "Offer",
+              price: "0",
+              priceCurrency: "USD",
+            },
+          }),
+        }}
+      />
+     
     <main className="w-full">
       <div className="max-w-360 mx-auto px-4 md:px-8 xl:px-30 py-6 lg:py-8 ">
         <Hero onFilesSelected={handleFilesSelected} isUploading={uploadDocuments.isPending} />
         <HowItWorks />
       </div>
     </main>
+    </>
+
   );
 }

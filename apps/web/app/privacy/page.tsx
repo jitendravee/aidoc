@@ -1,5 +1,10 @@
 import Text from "@/components/ui/Text";
-
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "How FlowPDF handles your files and data.",
+  alternates: { canonical: "https://flowpdf.online/privacy" },
+};
 const sections = [
   {
     title: "1. What we collect",
