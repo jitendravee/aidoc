@@ -39,11 +39,13 @@ export default function WorkspacePage() {
   const [history, setHistory] = useState<ChatEntry[]>([]);
 
   const documentIds = documents.map((d) => d.document_id);
-  const sendMessage = useSendMessage(documentIds);
   const addDocuments = useUploadMultipleDocuments();
   const addFileInputRef = useRef<HTMLInputElement>(null);
   const undoDocument = useUndoDocument();
-
+  const [workspaceId] = useState<string>(
+    () => searchParams.get("wsid") ?? crypto.randomUUID(),
+  );
+  const sendMessage = useSendMessage(workspaceId, documentIds);
   function handleUndo(documentId: string) {
     undoDocument.mutate(documentId, {
       onSuccess: (reverted) => {
@@ -63,7 +65,7 @@ export default function WorkspacePage() {
   }
   function syncWorkspaceUrl(docs: WorkspaceDocument[]) {
     const ids = docs.map((d) => d.document_id);
-    router.replace(`/workspace?ids=${ids.join(",")}`);
+    router.replace(`/workspace?ids=${ids.join(",")}&wsid=${workspaceId}`);
   }
   useEffect(() => {
     async function hydrate() {
@@ -79,8 +81,6 @@ export default function WorkspacePage() {
       setIsHydrating(false);
     }
     hydrate();
-    // intentionally only on mount — subsequent state changes come from
-    // sendMessage/add-file responses, not from re-reading the URL
   }, []);
   function handleSend() {
     if (!input.trim()) return;
@@ -229,36 +229,27 @@ export default function WorkspacePage() {
                 {entry.documents?.map((doc) => (
                   <div
                     key={doc.document_id}
-                    className="mt-2 overflow-hidden rounded-lg border border-gray-200 bg-white"
+                    className="mt-2 flex items-center justify-between rounded-lg border border-gray-200 bg-white px-2 py-1.5"
                   >
-                    <iframe
-                      src={doc.download_url}
-                      title={doc.filename}
-                      className="h-40 w-full"
-                    />
-                    <div className="flex items-center justify-between px-2 py-1.5">
-                      <span className="truncate text-xs text-gray-500">
-                        {doc.filename}
-                      </span>
-                      <div className="flex gap-2">
-                        <a
-                          href={doc.download_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs font-medium text-blue-600 hover:underline"
+                    <span className="truncate text-xs text-gray-500">
+                      {doc.filename}
+                    </span>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setActiveDocId(doc.document_id)}
+                        className="text-xs font-medium text-blue-600 hover:underline"
+                      >
+                        View
+                      </button>
+                      {doc.can_undo && (
+                        <button
+                          onClick={() => handleUndo(doc.document_id)}
+                          disabled={undoDocument.isPending}
+                          className="text-xs font-medium text-gray-500 hover:text-red-600 disabled:opacity-50"
                         >
-                          Open
-                        </a>
-                        {doc.can_undo && (
-                          <button
-                            onClick={() => handleUndo(doc.document_id)}
-                            disabled={undoDocument.isPending}
-                            className="text-xs font-medium text-gray-500 hover:text-red-600 disabled:opacity-50"
-                          >
-                            Undo this
-                          </button>
-                        )}
-                      </div>
+                          Undo this
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}

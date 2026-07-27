@@ -48,7 +48,6 @@ htmlcov/
 # our own scratch/cache dirs
 cache/
 scratch/
-storage/
 
 # ---------- Next.js / Frontend ----------
 apps/web/node_modules/

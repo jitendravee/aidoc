@@ -22,3 +22,5 @@ CREATE TABLE messages (
   content TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now()
 );
+ALTER TABLE messages ADD COLUMN workspace_id UUID NOT NULL;
+CREATE INDEX idx_messages_workspace_id ON messages(workspace_id);

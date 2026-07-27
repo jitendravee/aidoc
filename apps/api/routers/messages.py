@@ -16,6 +16,7 @@ CACHE_DIR = "cache"
 
 
 class SendMessageRequest(BaseModel):
+    workspace_id: str
     message: str
     document_ids: list[str]
 
@@ -25,7 +26,7 @@ async def send_message(body: SendMessageRequest):
     os.makedirs(CACHE_DIR, exist_ok=True)
 
     primary_doc_id = body.document_ids[0]
-    save_message(primary_doc_id, "user", body.message)
+    save_message(body.workspace_id, "user", body.message)
     history = get_recent_messages(primary_doc_id, limit=6)
 
     doc_paths = {}
@@ -66,7 +67,7 @@ async def send_message(body: SendMessageRequest):
             response_documents.append({
                 "document_id": target_doc_id,
                 "filename": get_document_filename(target_doc_id),
-                "download_url": get_presigned_download_url(head["storage_key"]),
+                "download_url": get_presigned_download_url(head["storage_key"],inline=True),
                 "page_count": head["page_count"],        
                 "can_undo": head["parent_version_id"] is not None,
 
@@ -86,7 +87,7 @@ async def send_message(body: SendMessageRequest):
             response_documents.append({
                         "document_id": target_doc_id,
                         "filename": filename,
-                        "download_url": get_presigned_download_url(new_storage_key),
+                        "download_url": get_presigned_download_url(new_storage_key,inline=True),
                         "page_count": page_count,
                         "can_undo": True,
             
@@ -103,7 +104,7 @@ async def send_message(body: SendMessageRequest):
             response_documents.append({
                         "document_id": target_doc_id,
                         "filename": filename,
-                        "download_url": get_presigned_download_url(new_storage_key),
+                        "download_url": get_presigned_download_url(new_storage_key,inline=True),
                         "page_count": page_count,
                         "can_undo": False,
             
