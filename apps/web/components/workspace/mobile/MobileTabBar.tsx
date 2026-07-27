@@ -7,7 +7,6 @@ const tabs: { id: MobileTab; label: string; icon: typeof MessageCircle }[] = [
   { id: "chat", label: "Chat", icon: MessageCircle },
   { id: "pages", label: "Pages", icon: FileStack },
   { id: "download", label: "Download", icon: Download },
-  { id: "more", label: "More", icon: MoreHorizontal },
 ];
 
 export default function MobileTabBar({ active, onChange }: { active: MobileTab; onChange: (tab: MobileTab) => void }) {

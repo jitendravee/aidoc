@@ -207,8 +207,8 @@ export default function WorkspacePage() {
   return (
     <>
       {/* MOBILE — bottom-sheet layout */}
-      <div className="flex h-dvh flex-col md:hidden">
-        <MobileHeader />
+      <div className="flex h-[90vh] flex-col md:hidden">
+        {/* <MobileHeader /> */}
         <MobileDocStrip
           activeDoc={activeDoc}
           documents={documents}
