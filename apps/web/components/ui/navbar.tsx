@@ -2,16 +2,15 @@ import Image from "next/image";
 
 export function Navbar() {
   return (
-    <nav className=" flex items-center justify-between px-6 py-3 ">
-      <div className="relative w-43.25 h-15">
-        <Image
-          src="/logo.png"
-          alt="Logo"
-          fill
-          className="object-contain"
-          priority
-        />
-      </div>
+    <nav className="flex items-center justify-between px-4 py-3 sm:px-6">
+      <Image
+        src="/logo.png"
+        alt="Logo"
+        width={173}
+        height={60}
+        className="h-auto w-28 sm:w-36 md:w-40 lg:w-43.25"
+        priority
+      />
     </nav>
   );
 }

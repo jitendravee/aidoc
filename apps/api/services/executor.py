@@ -5,11 +5,6 @@ from workers.tools.base import ToolError
 
 
 def execute_plan(plan: dict, doc_paths: dict[str, str], cache_dir: str) -> dict:
-    """
-    doc_paths: {"doc_1": "/cache/doc1_input.pdf", "doc_2": "/cache/doc2_input.pdf"}
-    Returns final_output_path pointing at ONE resulting file (post-merge if
-    a merge happened, or the single edited document otherwise).
-    """
     operations = plan.get("operations", [])
     if not operations:
         return {"status": "clarification_needed", "question": plan.get("clarification")}
@@ -17,11 +12,9 @@ def execute_plan(plan: dict, doc_paths: dict[str, str], cache_dir: str) -> dict:
     single_doc_ops = [op for op in operations if "target" in op]
     merge_ops = [op for op in operations if op["tool"] == "merge_pdfs"]
 
-    current_paths = dict(doc_paths)  # label -> current path, updated as we edit
+    current_paths = dict(doc_paths)
     diff_summaries = []
 
-    # Step 1: run per-document edits first (rotate/delete), same
-    # ordering logic as before but scoped per target document.
     by_target: dict[str, list[dict]] = {}
     for op in single_doc_ops:
         by_target.setdefault(op["target"], []).append(op)
@@ -29,8 +22,8 @@ def execute_plan(plan: dict, doc_paths: dict[str, str], cache_dir: str) -> dict:
     for target, ops in by_target.items():
         rotate_ops = [o for o in ops if o["tool"] == "rotate_pages"]
         delete_ops = [o for o in ops if o["tool"] == "delete_pages"]
-
         path = current_paths[target]
+
         for i, op in enumerate(rotate_ops):
             step_output = os.path.join(cache_dir, f"{target}_rotate_{i}.pdf")
             result = _run_tool("rotate_pages", op["params"], path, step_output)
@@ -54,33 +47,36 @@ def execute_plan(plan: dict, doc_paths: dict[str, str], cache_dir: str) -> dict:
 
         current_paths[target] = path
 
-    # Step 2: merge, if requested — consumes the (possibly edited) documents
+    results = []            # [{"labels": [...], "path": ...}, ...]
+    merged_labels = set()
+
     if merge_ops:
-        merge_op = merge_ops[0]  # only support one merge per plan for now
+        merge_op = merge_ops[0]
         ordered_paths = [current_paths[label] for label in merge_op["targets"]]
         final_output_path = os.path.join(cache_dir, "merged_final.pdf")
         result = _run_tool("merge_pdfs", {"input_paths": ordered_paths}, None, final_output_path)
         if result["status"] != "success":
             return result
 
-        # clean up per-document intermediates now that they're merged
         for label in merge_op["targets"]:
+            merged_labels.add(label)
             if current_paths[label] != doc_paths[label]:
                 os.remove(current_paths[label])
 
         diff_summaries.append(result["result"]["diff_summary"])
-        return {
-            "status": "success",
-            "final_output_path": final_output_path,
-            "diff_summary": " ".join(diff_summaries),
-        }
+        results.append({"labels": merge_op["targets"], "path": final_output_path})
 
-    # No merge — single document was edited, return its final path
-    if len(current_paths) == 1:
-        only_path = next(iter(current_paths.values()))
-        return {"status": "success", "final_output_path": only_path, "diff_summary": " ".join(diff_summaries)}
+    # every document not consumed by a merge is its own independent
+    # result — whether it was edited above, or left completely untouched
+    for label, path in current_paths.items():
+        if label not in merged_labels:
+            results.append({"labels": [label], "path": path})
 
-    return {"status": "error", "message": "Multiple documents edited but no merge specified."}
+    return {
+        "status": "success",
+        "results": results,
+        "diff_summary": " ".join(diff_summaries) if diff_summaries else "No changes made.",
+    }
 
 
 def _run_tool(tool_name: str, params: dict, input_path, output_path: str) -> dict:
@@ -88,8 +84,6 @@ def _run_tool(tool_name: str, params: dict, input_path, output_path: str) -> dic
     full_params = dict(params)
     if input_path is not None:
         full_params["input_path"] = input_path
-    if "input_paths" in params:
-        pass  # merge_pdfs supplies its own list, no single input_path needed
     full_params["output_path"] = output_path
     try:
         tool_input = tool["input_model"](**full_params)

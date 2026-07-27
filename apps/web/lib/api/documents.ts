@@ -20,3 +20,13 @@ export async function uploadMultipleDocuments(files: File[]) {
   }
   return results; // [{ document_id, download_url, page_count, filename }, ...]
 }
+// lib/api/documents.ts — add this
+export async function getDocument(documentId: string) {
+  const { data } = await apiClient.get(`/documents/${documentId}`);
+  return data; // { document_id, filename, download_url, page_count }
+}
+// lib/api/documents.ts — add
+export async function undoDocument(documentId: string) {
+  const { data } = await apiClient.post(`/documents/${documentId}/undo`);
+  return data; // { document_id, filename, download_url, page_count, can_undo }
+}

@@ -6,5 +6,5 @@ export async function sendMessage(documentIds: string[], message: string) {
     message,
     document_ids: documentIds,
   });
-  return data;
+  return data; // { status, documents?, diff_summary, question?, message? }
 }

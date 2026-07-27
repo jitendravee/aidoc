@@ -15,6 +15,7 @@ def create_document(original_filename: str) -> str:
     conn.close()
     return document_id
 
+
 def save_message(document_id: str, role: str, content: str) -> None:
     conn = get_connection()
     cur = conn.cursor()
@@ -25,7 +26,15 @@ def save_message(document_id: str, role: str, content: str) -> None:
     conn.commit()
     cur.close()
     conn.close()
-
+# apps/api/db/repository.py — add this
+def get_document_filename(document_id: str) -> str:
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT original_filename FROM documents WHERE id = %s", (document_id,))
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+    return row[0] if row else "document.pdf"
 
 def get_recent_messages(document_id: str, limit: int = 6) -> list[dict]:
     """Most recent turns, oldest first — this is the compact context
@@ -58,11 +67,12 @@ def create_version(document_id, storage_key, page_count, diff_summary, parent_ve
     return version_id
 
 
+# apps/api/db/repository.py
 def get_head_version(document_id: str) -> dict:
     conn = get_connection()
     cur = conn.cursor()
     cur.execute(
-        """SELECT v.id, v.storage_key, v.page_count
+        """SELECT v.id, v.storage_key, v.page_count, v.parent_version_id
            FROM versions v
            JOIN documents d ON d.head_version_id = v.id
            WHERE d.id = %s""",
@@ -73,4 +83,17 @@ def get_head_version(document_id: str) -> dict:
     conn.close()
     if row is None:
         raise ValueError(f"No head version found for document {document_id}")
-    return {"version_id": row[0], "storage_key": row[1], "page_count": row[2]}
+    return {"version_id": row[0], "storage_key": row[1], "page_count": row[2], "parent_version_id": row[3]}
+
+
+def revert_to_previous_version(document_id: str) -> dict:
+    head = get_head_version(document_id)
+    if head["parent_version_id"] is None:
+        raise ValueError("This document has no earlier version to revert to.")
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE documents SET head_version_id = %s WHERE id = %s", (head["parent_version_id"], document_id))
+    conn.commit()
+    cur.close()
+    conn.close()
+    return get_head_version(document_id)

@@ -1,13 +1,38 @@
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter, HTTPException, UploadFile
 import uuid, shutil, os, pikepdf
 
 from apps.api.storage.b2_client import upload_file, get_presigned_download_url
-from apps.api.db.repository import create_document, create_version
+from apps.api.db.repository import create_document, create_version, get_document_filename, get_head_version, revert_to_previous_version
 
 router = APIRouter()
 CACHE_DIR = "cache"  # scratch space only — not the source of truth anymore
+@router.post("/documents/{document_id}/undo")
+async def undo_document(document_id: str):
+    try:
+        new_head = revert_to_previous_version(document_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
+    return {
+        "document_id": document_id,
+        "filename": get_document_filename(document_id),
+        "download_url": get_presigned_download_url(new_head["storage_key"], inline=True),
+        "page_count": new_head["page_count"],
+        "can_undo": new_head["parent_version_id"] is not None,
+    }
+@router.get("/documents/{document_id}")
+async def get_document(document_id: str):
+    try:
+        head = get_head_version(document_id)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="Document not found")
 
+    return {
+        "document_id": document_id,
+        "filename": get_document_filename(document_id),
+        "download_url": get_presigned_download_url(head["storage_key"], inline=True), # type: ignore
+        "page_count": head["page_count"],
+    }
 @router.post("/documents")
 async def upload_document(file: UploadFile):
     os.makedirs(CACHE_DIR, exist_ok=True)
