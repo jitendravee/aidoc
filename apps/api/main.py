@@ -10,7 +10,7 @@ app = FastAPI(title="AI PDF Editor")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000","https://flowaipdf.netlify.app","http://flowpdf.online"],
+    allow_origins=["http://localhost:3000","https://flowaipdf.netlify.app","https://flowpdf.online"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
