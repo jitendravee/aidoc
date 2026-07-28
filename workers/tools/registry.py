@@ -1,4 +1,4 @@
-from workers.tools import delete_pages, merge_pdfs, rotate_pages, split_pdf
+from workers.tools import delete_pages, merge_pdfs, protect_pdf, rotate_pages, split_pdf, unlock_pdf, watermark_pdf
 
 TOOL_REGISTRY = {
     "delete_pages": {
@@ -36,6 +36,36 @@ TOOL_REGISTRY = {
         "category": "document",
         "output_count": 1,
         "params_schema": {},
+    },
+        "watermark_pdf": {
+        "input_model": watermark_pdf.WatermarkPdfInput,
+        "run": watermark_pdf.run,
+        "description": "Stamp a text watermark diagonally across every page.",
+        "arity": "single",
+        "category": "security",
+        "output_count": 1,
+        "params_schema": {
+            "text": "string — the watermark text",
+            "opacity": "float 0.0-1.0, default 0.3 — how faint the watermark is",
+        },
+    },
+    "protect_pdf": {
+        "input_model": protect_pdf.ProtectPdfInput,
+        "run": protect_pdf.run,
+        "description": "Add password protection to a document.",
+        "arity": "single",
+        "category": "security",
+        "output_count": 1,
+        "params_schema": {"password": "string — at least 4 characters"},
+    },
+    "unlock_pdf": {
+        "input_model": unlock_pdf.UnlockPdfInput,
+        "run": unlock_pdf.run,
+        "description": "Remove password protection from a document, given the current password.",
+        "arity": "single",
+        "category": "security",
+        "output_count": 1,
+        "params_schema": {"password": "string — the document's current password"},
     },
 }
 

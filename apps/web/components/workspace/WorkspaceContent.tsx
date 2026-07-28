@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useSendMessage } from "@/lib/hooks/useSendMessage";
 import { useUploadMultipleDocuments } from "@/lib/hooks/useUploadMultipleDocuments";
 import { useUndoDocument } from "@/lib/hooks/useUndoDocument";
-import { getDocument } from "@/lib/api/documents";
+import { completeUpload, getDocument } from "@/lib/api/documents";
 import type { WorkspaceDocument } from "@/lib/types/api";
 import DocumentTabBar from "@/components/workspace/DocumentTabBar";
 import PdfPreview from "@/components/workspace/PdfPreview";
@@ -17,11 +17,17 @@ import MobileTabBar, {
 } from "@/components/workspace/mobile/MobileTabBar";
 import MobileDocStrip from "@/components/workspace/mobile/MobileDocStrip";
 import MobileChatSheet from "@/components/workspace/mobile/MobileChatSheet";
+import { useSubmitSecureAction } from "@/lib/hooks/useSubmitSecureAction";
+import PasswordModal from "./PasswordModal";
 
 const MIN_CHAT_PCT = 24;
 const MAX_CHAT_PCT = 46;
 const DEFAULT_CHAT_PCT = 34;
 
+interface PendingUploadPassword {
+  uploadToken: string;
+  filename: string;
+}
 export default function WorkspaceContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -40,6 +46,10 @@ export default function WorkspaceContent() {
   const [activeDocId, setActiveDocId] = useState<string | null>(
     initialIds[0] ?? null,
   );
+  const [pendingUploadPasswords, setPendingUploadPasswords] = useState<PendingUploadPassword[]>([]);
+
+const [isSubmittingUploadPassword, setIsSubmittingUploadPassword] = useState(false);
+const [uploadPasswordError, setUploadPasswordError] = useState<string | undefined>(undefined);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<ChatEntry[]>([]);
   const [chatPct, setChatPct] = useState(DEFAULT_CHAT_PCT);
@@ -54,7 +64,13 @@ export default function WorkspaceContent() {
   const sendMessage = useSendMessage(workspaceId, documentIds);
   const addDocuments = useUploadMultipleDocuments();
   const undoDocument = useUndoDocument();
+  const [pendingSecureAction, setPendingSecureAction] = useState<{
+    tool: "protect_pdf" | "unlock_pdf";
+    documentId: string;
+    pendingSteps: object[];
+  } | null>(null);
 
+  const secureAction = useSubmitSecureAction(workspaceId);
   function syncWorkspaceUrl(docs: WorkspaceDocument[]) {
     router.replace(
       `/workspace?ids=${docs.map((d) => d.document_id).join(",")}&wsid=${workspaceId}`,
@@ -119,7 +135,35 @@ export default function WorkspaceContent() {
       },
     });
   }
-
+  function handleSecureSubmit(password: string) {
+    if (!pendingSecureAction) return;
+    secureAction.mutate(
+      {
+        documentId: pendingSecureAction.documentId,
+        tool: pendingSecureAction.tool,
+        password,
+        pendingSteps: pendingSecureAction.pendingSteps,
+      },
+      {
+        onSuccess: (data) => {
+          if (data.status === "success") {
+            setDocuments(data.documents);
+            syncWorkspaceUrl(data.documents);
+            setHistory((prev) => [
+              ...prev,
+              {
+                role: "assistant",
+                text: data.diff_summary,
+                documents: data.documents,
+              },
+            ]);
+            setPendingSecureAction(null);
+          }
+          // on failure, keep the modal open so they can retry with a different password
+        },
+      },
+    );
+  }
   function handleSend() {
     if (!input.trim()) return;
     const userMessage = input;
@@ -128,6 +172,14 @@ export default function WorkspaceContent() {
 
     sendMessage.mutate(userMessage, {
       onSuccess: (data) => {
+        if (data.status === "password_required") {
+          setPendingSecureAction({
+            tool: data.tool,
+            documentId: data.document_id,
+            pendingSteps: data.pending_steps ?? [],
+          });
+          return;
+        }
         if (data.status === "success") {
           setDocuments(data.documents);
           syncWorkspaceUrl(data.documents);
@@ -166,19 +218,25 @@ export default function WorkspaceContent() {
     });
   }
 
-  function handleAddFiles(files: File[]) {
-    addDocuments.mutate(files, {
-      onSuccess: (results) => {
+function handleAddFiles(files: File[]) {
+  addDocuments.mutate(files, {
+    onSuccess: ({ results, passwordPrompts }) => {
+      if (results.length > 0) {
         setDocuments((prev) => {
           const updated = [...prev, ...results];
           syncWorkspaceUrl(updated);
           return updated;
         });
         setActiveDocId(results[0].document_id);
-      },
-    });
-  }
-
+      }
+      if (passwordPrompts.length > 0) {
+        setPendingUploadPasswords(
+          passwordPrompts.map((p: any) => ({ uploadToken: p.upload_token, filename: p.filename }))
+        );
+      }
+    },
+  });
+}
   if (isHydrating) {
     return (
       <div className="flex h-screen  flex-col items-center justify-center gap-2">
@@ -189,7 +247,36 @@ export default function WorkspaceContent() {
       </div>
     );
   }
+async function handleUploadPasswordSubmit(password: string) {
+  const current = pendingUploadPasswords[0];
+  setIsSubmittingUploadPassword(true);
+  setUploadPasswordError(undefined);
 
+  const result = await completeUpload(current.uploadToken, password);
+  setIsSubmittingUploadPassword(false);
+
+  if (result.status === "error") {
+    setUploadPasswordError(result.message);
+    setPendingUploadPasswords((prev) => [
+      { uploadToken: result.upload_token, filename: current.filename },
+      ...prev.slice(1),
+    ]);
+    return;
+  }
+
+  setDocuments((prev) => {
+    const updated = [...prev, result];
+    syncWorkspaceUrl(updated);
+    return updated;
+  });
+  setActiveDocId(result.document_id);
+  setPendingUploadPasswords((prev) => prev.slice(1));
+}
+
+function handleCancelUploadPassword() {
+  setPendingUploadPasswords((prev) => prev.slice(1));
+  setUploadPasswordError(undefined);
+}
   const activeDoc = documents.find((d) => d.document_id === activeDocId);
   function handleMobileTabChange(tab: MobileTab) {
     setMobileTab(tab);
@@ -286,6 +373,24 @@ export default function WorkspaceContent() {
             </div>
           </>
         )}
+
+       {pendingSecureAction ? (
+  <PasswordModal
+    tool={pendingSecureAction.tool}
+    onSubmit={handleSecureSubmit}
+    onCancel={() => setPendingSecureAction(null)}
+    isSubmitting={secureAction.isPending}
+    error={secureAction.data?.status !== "success" ? secureAction.data?.message : undefined}
+  />
+) : pendingUploadPasswords.length > 0 ? (
+  <PasswordModal
+    tool="unlock_pdf"
+    onSubmit={handleUploadPasswordSubmit}
+    onCancel={handleCancelUploadPassword}
+    isSubmitting={isSubmittingUploadPassword}
+    error={uploadPasswordError}
+  />
+) : null}
       </div>
     </>
   );

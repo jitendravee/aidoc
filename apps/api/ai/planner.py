@@ -146,6 +146,7 @@ MODEL = "openrouter/free"
 CATEGORY_LABELS = {
     "page": "Page operations",
     "document": "Document operations",
+    "security": "Security operations",
 }
 
 
@@ -220,6 +221,20 @@ Rules for workflows:
    split point):
 {{"type": "clarification", "message": "Which page would you like to rotate?"}}
 
+2b. "password_required" — the request is to protect or unlock a PDF, and
+    the tool needed is "protect_pdf" or "unlock_pdf", but no password was
+    given in the message. NEVER ask for a password in chat text — that
+    field is handled by a secure UI, not conversation. Identify the tool,
+    the target document, and — if the user ALSO asked for other edits in
+    the same message (e.g. "delete page 4 and protect it") — include those
+    as "pending_steps", using the exact same step shape as a workflow step,
+    so nothing the user asked for gets silently dropped:
+{{"type": "password_required", "tool": "protect_pdf", "target": "doc_1", "pending_steps": []}}
+Example with a combined request ("delete page 4 then password protect doc_1"):
+{{"type": "password_required", "tool": "protect_pdf", "target": "doc_1", "pending_steps": [
+  {{"id": "delete_doc1_page4", "tool": "delete_pages", "inputs": ["doc_1"], "output": "doc1_clean", "params": {{"pages": [4]}}}}
+]}}
+
 3. "unsupported" — about PDF editing, but does NOT match any tool listed
    above. Say plainly it's not supported yet, and mention what IS
    available BY NAME from the tool list above:
@@ -230,6 +245,10 @@ Rules for workflows:
    from the tool list above:
 {{"type": "chat", "message": "Hey! I'm FlowPDF's assistant — I can help with <the actual supported tools from above>. What would you like to do?"}}
 
+Always pick the type that matches what the user actually asked... For
+protect/unlock requests specifically, if a password wasn't given, use
+"password_required" — never "clarification" — since passwords must never
+be typed into chat.
 Always pick the type that matches what the user actually asked, checking
 against the CURRENT tool list above — never against tool names mentioned
 only as examples in these instructions. Never invent a tool that isn't in
