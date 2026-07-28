@@ -1,32 +1,33 @@
-# workers/tools/merge_pdfs.py
+from __future__ import annotations
 import pikepdf
-from .base import ToolInput, ToolOutput, open_pdf
+from workers.tools.base import ToolInput, ToolOutput, ToolErrorCode, ToolError, open_pdf
 
 
 class MergePdfsInput(ToolInput):
-    input_paths: list[str]   # ordered — output preserves this order
+    input_paths: list[str]
     output_path: str
 
 
 class MergePdfsOutput(ToolOutput):
     output_path: str
-    pages_remaining: int
     diff_summary: str
+    page_count: int
 
 
-def run(input: MergePdfsInput) -> MergePdfsOutput:
+def run(params: MergePdfsInput) -> MergePdfsOutput:
+    if len(params.input_paths) < 2:
+        raise ToolError(ToolErrorCode.UNSUPPORTED_FEATURE, "Merge needs at least two documents.")
+
     merged = pikepdf.new()
-    for path in input.input_paths:
-        src = open_pdf(path)
-        merged.pages.extend(src.pages)
-        src.close()
+    for path in params.input_paths:
+        with open_pdf(path) as src:
+            merged.pages.extend(src.pages)
 
-    merged.save(input.output_path)
-    total_pages = len(merged.pages)
-    merged.close()
+    merged.save(params.output_path)
+    page_count = len(merged.pages)
 
     return MergePdfsOutput(
-        output_path=input.output_path,
-        pages_remaining=total_pages,
-        diff_summary=f"Merged {len(input.input_paths)} documents into one, {total_pages} pages total.",
+        output_path=params.output_path,
+        diff_summary=f"Merged {len(params.input_paths)} documents into one, {page_count} pages total.",
+        page_count=page_count,
     )

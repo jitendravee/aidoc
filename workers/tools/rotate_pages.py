@@ -1,11 +1,11 @@
-# workers/tools/rotate_pages.py
-from typing import Literal
-from .base import ToolInput, ToolOutput, open_pdf, validate_pages_in_range
+from __future__ import annotations
+from pydantic import BaseModel
+from workers.tools.base import ToolInput, ToolOutput, open_pdf, validate_pages_in_range
 
 
-class PageRotation(ToolInput):
+class PageRotation(BaseModel):
     page: int
-    rotation_degrees: Literal[90, 180, 270]
+    rotation_degrees: int
 
 
 class RotatePagesInput(ToolInput):
@@ -16,28 +16,23 @@ class RotatePagesInput(ToolInput):
 
 class RotatePagesOutput(ToolOutput):
     output_path: str
-    pages_remaining: int
     diff_summary: str
+    page_count: int
 
 
-def run(input: RotatePagesInput) -> RotatePagesOutput:
-    pdf = open_pdf(input.input_path)
-    total_pages = len(pdf.pages)
+def run(params: RotatePagesInput) -> RotatePagesOutput:
+    with open_pdf(params.input_path) as pdf:
+        validate_pages_in_range([r.page for r in params.rotations], len(pdf.pages))
 
-    page_numbers = [r.page for r in input.rotations]
-    validate_pages_in_range(page_numbers, total_pages)
+        for r in params.rotations:
+            pdf.pages[r.page - 1].rotate(r.rotation_degrees, relative=True)
 
-    for r in input.rotations:
-        pdf.pages[r.page - 1].rotate(r.rotation_degrees, relative=True)
+        pdf.save(params.output_path)
+        page_count = len(pdf.pages)
 
-    pdf.save(input.output_path)
-    pdf.close()
-
-    parts = [f"page {r.page} by {r.rotation_degrees}°" for r in input.rotations]
-    diff_summary = "Rotated " + ", ".join(parts) + "."
-
+    pages_str = ", ".join(str(r.page) for r in params.rotations)
     return RotatePagesOutput(
-        output_path=input.output_path,
-        pages_remaining=total_pages,
-        diff_summary=diff_summary,
+        output_path=params.output_path,
+        diff_summary=f"Rotated page(s) {pages_str}.",
+        page_count=page_count,
     )
