@@ -4,6 +4,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Hero } from "@/components/home/hero";
+import { ToolsGrid } from "@/components/home/ToolsGrid";
+
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { useUploadMultipleDocuments } from "@/lib/hooks/useUploadMultipleDocuments";
 import { completeUpload } from "@/lib/api/documents";
@@ -99,6 +101,7 @@ export default function Page() {
         <div className="max-w-360 mx-auto px-4 md:px-8 xl:px-30 py-6 lg:py-8 ">
           <Hero onFilesSelected={handleFilesSelected} isUploading={uploadDocuments.isPending} />
           <HowItWorks />
+          <ToolsGrid />
         </div>
       </main>
 

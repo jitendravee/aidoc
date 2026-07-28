@@ -4,7 +4,7 @@ load_dotenv(".env.local")
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from apps.api.routers import documents, messages
+from apps.api.routers import documents, messages, tools
 
 app = FastAPI(title="AI PDF Editor")
 
@@ -18,6 +18,7 @@ app.add_middleware(
 
 app.include_router(documents.router, tags=["documents"])
 app.include_router(messages.router, tags=["messages"])
+app.include_router(tools.router, tags=["tools"])
 
 @app.get("/health")
 def health():

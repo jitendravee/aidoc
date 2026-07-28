@@ -6,6 +6,7 @@ import { LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
 const productLinks = [
   { label: "Edit a PDF", href: "/" },
   { label: "How it works", href: "/#how-it-works" },
+  { label: "Available tools", href: "/#tools" },
 ];
 
 const legalLinks = [
