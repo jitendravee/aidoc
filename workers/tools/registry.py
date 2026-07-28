@@ -1,4 +1,9 @@
-from workers.tools import delete_pages, merge_pdfs, protect_pdf, rotate_pages, split_pdf, unlock_pdf, watermark_pdf
+import pikepdf
+from workers.tools import (
+    delete_pages, merge_pdfs, protect_pdf, rotate_pages, split_pdf,
+    unlock_pdf, watermark_pdf, extract_pages, organize_pdf, crop_pdf,
+    add_page_numbers, compress_pdf,
+)
 
 TOOL_REGISTRY = {
     "delete_pages": {
@@ -28,6 +33,56 @@ TOOL_REGISTRY = {
         "output_count": 2,
         "params_schema": {"split_after_page": "int — page number to split after"},
     },
+    "extract_pages": {
+        "input_model": extract_pages.ExtractPagesInput,
+        "run": extract_pages.run,
+        "description": "Pull specific pages out into a brand new document, preserving the order given.",
+        "arity": "single",
+        "category": "page",
+        "output_count": 1,
+        "params_schema": {"pages": "list[int] — 1-indexed pages to extract, in the order to keep them"},
+    },
+    "organize_pdf": {
+        "input_model": organize_pdf.OrganizePdfInput,
+        "run": organize_pdf.run,
+        "description": "Reorder all pages in a document into a new sequence.",
+        "arity": "single",
+        "category": "page",
+        "output_count": 1,
+        "params_schema": {"new_order": "list[int] — every original page number exactly once, in the new order"},
+    },
+# workers/tools/registry.py — just the crop_pdf entry shown, add usage_notes similarly to any tool that needs it
+    "crop_pdf": {
+        "input_model": crop_pdf.CropPdfInput,
+        "run": crop_pdf.run,
+        "description": "Crop a uniform margin off every page.",
+        "arity": "single",
+        "category": "page",
+        "output_count": 1,
+     "params_schema": {
+        "margin_points": "float, default 36 (~0.5in) — margin to remove from each edge",
+        "pages": "list[int], optional — 1-indexed pages to crop; omit to crop every page",
+    },
+    "usage_notes": [
+        "If the user gives a measurement in inches or centimeters, convert "
+        "it yourself: 1 inch = 72 points, 1 cm = 28.35 points. Only ask a "
+        "clarifying question if no measurement was given at all.",
+        "If the user names specific pages (e.g. 'crop page 4'), set "
+        "'pages' to just those. If they don't mention specific pages "
+        "(e.g. 'crop this pdf'), omit 'pages' entirely so it applies to "
+        "the whole document — don't ask which pages unless they've "
+        "already implied a subset.",
+    ],
+    },
+    "add_page_numbers": {
+        "input_model": add_page_numbers.AddPageNumbersInput,
+        "run": add_page_numbers.run,
+        "description": "Stamp page numbers onto every page.",
+        "arity": "single",
+        "category": "page",
+        "output_count": 1,
+        "params_schema": {"position": '"bottom-center" or "bottom-right", default "bottom-center"'},
+    },
     "merge_pdfs": {
         "input_model": merge_pdfs.MergePdfsInput,
         "run": merge_pdfs.run,
@@ -37,7 +92,16 @@ TOOL_REGISTRY = {
         "output_count": 1,
         "params_schema": {},
     },
-        "watermark_pdf": {
+    "compress_pdf": {
+        "input_model": compress_pdf.CompressPdfInput,
+        "run": compress_pdf.run,
+        "description": "Reduce the document's internal file size by removing redundant structure.",
+        "arity": "single",
+        "category": "document",
+        "output_count": 1,
+        "params_schema": {},
+    },
+    "watermark_pdf": {
         "input_model": watermark_pdf.WatermarkPdfInput,
         "run": watermark_pdf.run,
         "description": "Stamp a text watermark diagonally across every page.",
@@ -81,6 +145,7 @@ TOOLS_INFO = [
         "category": tool["category"],
         "output_count": tool["output_count"],
         "params_schema": tool["params_schema"],
+        "usage_notes": tool.get("usage_notes", []),
     }
     for name, tool in TOOL_REGISTRY.items()
 ]

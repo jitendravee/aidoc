@@ -35,27 +35,41 @@ interface Tool {
 }
 
 const ICON_MAP: Record<string, LucideIcon> = {
-  merge_pdfs: Merge,
-  split_pdf: Scissors,
+  // Page tools
   delete_pages: Trash2,
   rotate_pages: RotateCw,
+  split_pdf: Scissors,
+  extract_pages: FileText,
+  organize_pdf: FileStack,
+  crop_pdf: Crop,
+  add_page_numbers: Hash,
+
+  // Document tools
+  merge_pdfs: Merge,
+  compress_pdf: FileStack,
+
+  // Security
   protect_pdf: Lock,
   unlock_pdf: Unlock,
   watermark_pdf: Stamp,
-  crop_pdf: Crop,
-  page_numbers: Hash,
-  ocr_pdf: ScanText,
-  translate_pdf: Languages,
-  summarize_pdf: Sparkles,
-  redact_pdf: EyeOff,
-  sign_pdf: PenLine,
+
+  // Convert
   pdf_to_word: FileText,
-  word_to_pdf: FileText,
   pdf_to_powerpoint: Presentation,
   pdf_to_excel: FileSpreadsheet,
-  compress_pdf: FileStack,
-};
+  word_to_pdf: FileText,
 
+  // Extract
+  ocr_pdf: ScanText,
+
+  // AI
+  translate_pdf: Languages,
+  summarize_pdf: Sparkles,
+
+  // Security (coming soon)
+  redact_pdf: EyeOff,
+  sign_pdf: PenLine,
+};
 const CATEGORY_STYLES: Record<string, { bg: string; text: string }> = {
   page: { bg: "bg-blue-50", text: "text-blue-600" },
   document: { bg: "bg-violet-50", text: "text-violet-600" },
@@ -117,11 +131,10 @@ export function ToolsGrid() {
         No menus to hunt through — just tell FlowPDF what you need done.
       </Text>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {isLoading &&
-          Array.from({ length: 10 }).map((_, i) => (
-            <ToolCardSkeleton key={i} />
-          ))}
-
+ {isLoading &&
+  new Array(10).fill(null).map((_, i) => (
+    <ToolCardSkeleton key={i} />
+  ))}
         {tools?.map((tool: Tool) => {
           const Icon = getIcon(tool.name);
           const style = getCategoryStyle(tool.category);

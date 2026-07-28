@@ -17,7 +17,7 @@ export function Navbar() {
 
   return (
     <nav className="sticky top-0 z-40 border-b border-border/60 bg-surface/80 backdrop-blur-md">
-      <div className="mx-auto flex items-center justify-between px-4 py-3 sm:px-6 md:px-8 xl:px-30">
+      <div className="mx-auto flex items-center justify-between px-4 py-3 sm:px-6 md:px-8 xl:px-10">
         <a href="/" className="shrink-0">
           <Image
             src="/logo.png"
@@ -45,12 +45,12 @@ export function Navbar() {
             </a>
           ))}
         </div>
-
+{/* 
         <div className="hidden md:block">
           <Button size="sm" onClick={() => (window.location.href = "/#upload")}>
             Upload PDF
           </Button>
-        </div>
+        </div> */}
 
         {/* Mobile menu toggle */}
         <button
@@ -75,7 +75,7 @@ export function Navbar() {
               <Text size="sm" weight="medium">{link.label}</Text>
             </a>
           ))}
-          <Button
+          {/* <Button
             size="sm"
             className="mt-2 w-full"
             onClick={() => {
@@ -84,7 +84,7 @@ export function Navbar() {
             }}
           >
             Upload PDF
-          </Button>
+          </Button> */}
         </div>
       )}
     </nav>

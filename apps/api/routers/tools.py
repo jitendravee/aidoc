@@ -8,7 +8,6 @@ router = APIRouter()
 # what's coming without needing a second hardcoded list on the frontend.
 # Remove an entry from here the same day you add it to TOOL_REGISTRY.
 COMING_SOON = [
-    {"name": "compress_pdf", "label": "Compress PDF", "description": "Reduce file size while optimizing for maximal PDF quality.", "category": "convert"},
     {"name": "pdf_to_word", "label": "PDF to Word", "description": "Convert your PDF files into easy to edit DOC and DOCX documents.", "category": "convert"},
     {"name": "pdf_to_powerpoint", "label": "PDF to PowerPoint", "description": "Turn your PDF files into easy to edit PPT and PPTX slideshows.", "category": "convert"},
     {"name": "pdf_to_excel", "label": "PDF to Excel", "description": "Pull data straight from PDFs into Excel spreadsheets.", "category": "convert"},
