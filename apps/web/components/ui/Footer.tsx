@@ -1,5 +1,6 @@
 // components/layout/footer.tsx
 import Image from "next/image";
+import Link from "next/link";
 import Text from "../ui/Text";
 import { LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
 
@@ -7,6 +8,7 @@ const productLinks = [
   { label: "Edit a PDF", href: "/" },
   { label: "How it works", href: "/#how-it-works" },
   { label: "Available tools", href: "/#tools" },
+  { label: "FAQ", href: "/#faq" },
 ];
 
 const legalLinks = [
@@ -49,11 +51,11 @@ export function Footer() {
                 Product
               </Text>
               {productLinks.map((link) => (
-                <a key={link.href} href={link.href} className="w-fit">
+                <Link key={link.href} href={link.href} className="w-fit">
                   <Text size="sm" color="text-secondary" className="transition-colors hover:text-primary">
                     {link.label}
                   </Text>
-                </a>
+                </Link>
               ))}
             </div>
 
@@ -62,11 +64,11 @@ export function Footer() {
                 Legal
               </Text>
               {legalLinks.map((link) => (
-                <a key={link.href} href={link.href} className="w-fit">
+                <Link key={link.href} href={link.href} className="w-fit">
                   <Text size="sm" color="text-secondary" className="transition-colors hover:text-primary">
                     {link.label}
                   </Text>
-                </a>
+                </Link>
               ))}
             </div>
           </div>

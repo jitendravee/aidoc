@@ -7,6 +7,7 @@ import { Hero } from "@/components/home/hero";
 import { ToolsGrid } from "@/components/home/ToolsGrid";
 
 import { HowItWorks } from "@/components/home/HowItWorks";
+import { FAQ } from "@/components/home/FAQ";
 import { useUploadMultipleDocuments } from "@/lib/hooks/useUploadMultipleDocuments";
 import { completeUpload } from "@/lib/api/documents";
 import PasswordModal from "@/components/workspace/PasswordModal";
@@ -93,6 +94,27 @@ export default function Page() {
               price: "0",
               priceCurrency: "USD",
             },
+            featureList: [
+              "Rotate PDF pages",
+              "Delete PDF pages",
+              "Merge multiple PDFs",
+              "Split a PDF apart",
+              "Extract specific pages",
+              "Organize page order",
+              "Crop PDF pages",
+              "Add page numbers",
+              "Compress a PDF",
+              "Password-protect a PDF",
+              "Unlock a password-protected PDF",
+              "Add a watermark",
+              "Convert PDF to Word",
+              "Convert PDF to PowerPoint",
+              "Convert PDF to Excel",
+              "Convert Word to PDF",
+              "OCR scanned PDFs",
+              "Translate a PDF",
+              "Summarize a PDF",
+            ],
           }),
         }}
       />
@@ -102,6 +124,7 @@ export default function Page() {
           <Hero onFilesSelected={handleFilesSelected} isUploading={uploadDocuments.isPending} />
           <HowItWorks />
           <ToolsGrid />
+          <FAQ />
         </div>
       </main>
 

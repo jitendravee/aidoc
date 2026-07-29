@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Sora } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
@@ -8,6 +8,16 @@ import { Footer } from "@/components/ui/Footer";
 
 const SITE_URL = "https://flowpdf.online";
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+
+// themeColor/colorScheme moved out of `metadata` and into a dedicated
+// `viewport` export — Next.js warns (and eventually errors) if these stay
+// in the metadata object, and a correct theme-color also improves how the
+// site looks in the mobile browser chrome / when added to a home screen,
+// which feeds into overall page-experience signals.
+export const viewport: Viewport = {
+  themeColor: "#2563eb",
+  colorScheme: "light",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -75,6 +85,7 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
+  manifest: "/manifest.webmanifest",
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
   },
@@ -103,6 +114,41 @@ export default function RootLayout({
       className={`${inter.variable} ${sora.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {/*
+          Sitewide Organization + WebSite structured data. This is separate
+          from the SoftwareApplication JSON-LD on the homepage: Organization
+          gives search engines and AI answer engines (via RAG/grounding) a
+          stable entity to attach the brand to across every page, not just "/".
+          Update `sameAs` with real social/profile URLs once they exist —
+          verified sameAs links measurably help entity recognition.
+        */}
+        <Script
+          id="org-jsonld"
+          type="application/ld+json"
+          strategy="beforeInteractive"
+        >
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "FlowPDF",
+            url: SITE_URL,
+            logo: `${SITE_URL}/logo.png`,
+            sameAs: [],
+          })}
+        </Script>
+        <Script
+          id="website-jsonld"
+          type="application/ld+json"
+          strategy="beforeInteractive"
+        >
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "FlowPDF",
+            url: SITE_URL,
+          })}
+        </Script>
+
         {GA_ID && (
           <>
             <Script

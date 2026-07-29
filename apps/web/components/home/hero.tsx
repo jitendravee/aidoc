@@ -109,9 +109,30 @@ export const Hero = ({ onFilesSelected, isUploading }: HeroProps) => {
       </div>
 
       <div className="relative w-full lg:flex-1 h-[320px] md:h-[450px] lg:h-full lg:min-h-[500px]">
-        <Image src="/hero_mobile.png" alt="FlowPDF product preview" fill priority className="block md:hidden object-contain" />
-        <Image src="/hero_tablet.png" alt="FlowPDF product preview" fill priority className="hidden md:block lg:hidden object-contain" />
-        <Image src="/hero.png" alt="FlowPDF product preview" fill priority className="hidden lg:block object-contain" />
+        <Image
+          src="/hero_mobile.png"
+          alt="FlowPDF chat interface showing a PDF being edited by typing a plain-English request"
+          fill
+          priority
+          sizes="100vw"
+          className="block md:hidden object-contain"
+        />
+        <Image
+          src="/hero_tablet.png"
+          alt="FlowPDF chat interface showing a PDF being edited by typing a plain-English request"
+          fill
+          priority
+          sizes="100vw"
+          className="hidden md:block lg:hidden object-contain"
+        />
+        <Image
+          src="/hero.png"
+          alt="FlowPDF chat interface showing a PDF being edited by typing a plain-English request"
+          fill
+          priority
+          sizes="(min-width: 1024px) 50vw, 100vw"
+          className="hidden lg:block object-contain"
+        />
       </div>
     </section>
   );

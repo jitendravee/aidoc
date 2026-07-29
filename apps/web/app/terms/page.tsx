@@ -6,7 +6,14 @@ export const metadata: Metadata = {
   description: "The terms governing your use of FlowPDF's PDF editing tools.",
   alternates: { canonical: "https://flowpdf.online/terms" },
 };
+
 const sections = [
+  // ========== NEW: Acceptance & Operator ==========
+  {
+    title: "0. Acceptance and Operator",
+    body: "These Terms govern your use of FlowPDF.online, operated by [Insert Your Legal Company Name], registered at [Insert Full Physical Address, City, Country]. By using the service, you agree to these terms. If you do not agree, please do not use the service.",
+  },
+  // =================================================
   {
     title: "1. What FlowPDF does",
     body: "FlowPDF lets you upload PDF files and edit them using natural-language chat instructions — for example, rotating, deleting, or merging pages. We add new editing tools over time; if a request isn't supported yet, the assistant will tell you directly rather than guessing.",
@@ -31,10 +38,24 @@ const sections = [
     title: "6. Changes",
     body: "We may update these terms as the product evolves. Continued use after a change means you accept the updated terms.",
   },
+  // ========== REPLACED: Contact ==========
   {
-    title: "7. Contact",
-    body: "Questions about these terms? Reach out at the contact details listed on our site.",
+    title: "7. Contact Us",
+    body: "Questions about these Terms? Email us directly at: support@flowpdf.online.",
   },
+  // ========================================
+  // ========== NEW: Pricing & Refund ==========
+  {
+    title: "8. Pricing and Refund Policy",
+    body: "FlowPDF is currently offered as a completely free service with no usage limits. We reserve the right to introduce paid premium plans or usage caps in the future. If we do, we will post a clear notice on the website at least 30 days in advance. Since the service is currently free, no refunds apply, and we do not store your payment information.",
+  },
+  // ===========================================
+  // ========== NEW: Governing Law & Jurisdiction ==========
+  {
+    title: "9. Governing Law and Jurisdiction",
+    body: "These Terms are governed by and construed in accordance with the laws of [Insert Country/State, e.g., Delaware, USA]. Any disputes arising out of or relating to these Terms shall be resolved exclusively in the courts located in [Insert City/County, e.g., Wilmington, Delaware]. You agree to submit to the personal jurisdiction of such courts.",
+  },
+  // =======================================================
 ];
 
 export default function TermsPage() {

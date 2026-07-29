@@ -3,13 +3,14 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import Text from "../ui/Text";
-import Button from "../ui/Button";
 
 const navLinks = [
   { label: "How it works", href: "/#how-it-works" },
   { label: "Available tools", href: "/#tools" },
+  { label: "FAQ", href: "/#faq" },
 ];
 
 export function Navbar() {
@@ -18,16 +19,16 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-40 border-b border-border/60 bg-surface/80 backdrop-blur-md">
       <div className="mx-auto flex items-center justify-between px-4 py-3 sm:px-6 md:px-8 xl:px-10">
-        <a href="/" className="shrink-0">
+        <Link href="/" className="shrink-0">
           <Image
             src="/logo.png"
-            alt="FlowPDF"
+            alt="FlowPDF — AI PDF editor"
             width={173}
             height={60}
             className="h-auto w-28 sm:w-36 md:w-40 lg:w-43.25"
             priority
           />
-        </a>
+        </Link>
 
         {/* Desktop links */}
         <div className="hidden items-center gap-8 md:flex">

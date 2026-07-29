@@ -25,6 +25,22 @@ const steps = [
 export function HowItWorks() {
   return (
     <section id="how-it-works" className="py-16 lg:py-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            name: "How to edit a PDF with FlowPDF",
+            step: steps.map((step) => ({
+              "@type": "HowToStep",
+              position: step.number,
+              name: step.title,
+              text: step.description,
+            })),
+          }),
+        }}
+      />
       <Text as="h2" size={{ base: "2xl", lg: "3xl" }} weight="bold" family="heading" align="center" className="mb-12 lg:mb-16">
         How it works
       </Text>

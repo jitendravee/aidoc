@@ -1,12 +1,24 @@
 // app/sitemap.ts
 import type { MetadataRoute } from "next";
 
+const SITE_URL = "https://flowpdf.online";
+
+// Use real "last updated" dates per route instead of `new Date()`.
+// Regenerating a fresh timestamp on every build tells crawlers every page
+// changed today, which trains Google to distrust your lastmod signal and
+// can waste crawl budget re-fetching pages that haven't actually changed.
+// Bump a route's date only when its content meaningfully changes.
+const routes: { path: string; lastModified: string; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]; priority: number }[] = [
+  { path: "", lastModified: "2026-07-01", changeFrequency: "weekly", priority: 1 },
+  { path: "/terms", lastModified: "2026-07-01", changeFrequency: "yearly", priority: 0.3 },
+  { path: "/privacy", lastModified: "2026-07-01", changeFrequency: "yearly", priority: 0.3 },
+];
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = ["", "/terms", "/privacy"];
   return routes.map((route) => ({
-    url: `https://flowpdf.online${route}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly",
-    priority: route === "" ? 1 : 0.5,
+    url: `${SITE_URL}${route.path}`,
+    lastModified: route.lastModified,
+    changeFrequency: route.changeFrequency,
+    priority: route.priority,
   }));
 }
