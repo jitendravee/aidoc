@@ -7,6 +7,8 @@ import { LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
 const productLinks = [
   { label: "Edit a PDF", href: "/" },
   { label: "How it works", href: "/#how-it-works" },
+  { label: "Blog", href: "/blog" },
+
   { label: "Available tools", href: "/#tools" },
   { label: "FAQ", href: "/#faq" },
 ];
@@ -23,23 +25,36 @@ export function Footer() {
         <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
           {/* Brand + trust signals */}
           <div className="flex flex-col gap-4 lg:max-w-xs">
-            <Image src="/logo.png" alt="FlowPDF" width={173} height={60} className="h-auto w-28" />
+            <Image
+              src="/logo.png"
+              alt="FlowPDF"
+              width={173}
+              height={60}
+              className="h-auto w-28"
+            />
             <Text size="sm" color="text-secondary">
-              Edit PDFs by simply asking. New tools are added to the AI regularly — if it can't
-              do something yet, it'll tell you plainly instead of guessing.
+              Edit PDFs by simply asking. New tools are added to the AI
+              regularly — if it can't do something yet, it'll tell you plainly
+              instead of guessing.
             </Text>
             <div className="flex flex-col gap-2 pt-1">
               <div className="flex items-center gap-2">
                 <LockKeyhole className="size-3.5 text-primary" />
-                <Text size="xs" color="text-secondary">Files are private and never shared</Text>
+                <Text size="xs" color="text-secondary">
+                  Files are private and never shared
+                </Text>
               </div>
               <div className="flex items-center gap-2">
                 <ShieldCheck className="size-3.5 text-primary" />
-                <Text size="xs" color="text-secondary">No sign-up required</Text>
+                <Text size="xs" color="text-secondary">
+                  No sign-up required
+                </Text>
               </div>
               <div className="flex items-center gap-2">
                 <Sparkles className="size-3.5 text-primary" />
-                <Text size="xs" color="text-secondary">New AI tools shipped continuously</Text>
+                <Text size="xs" color="text-secondary">
+                  New AI tools shipped continuously
+                </Text>
               </div>
             </div>
           </div>
@@ -47,12 +62,20 @@ export function Footer() {
           {/* Link columns — only real, live pages */}
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
             <div className="flex flex-col gap-3">
-              <Text size="xs" weight="semibold" className="uppercase tracking-wide">
+              <Text
+                size="xs"
+                weight="semibold"
+                className="uppercase tracking-wide"
+              >
                 Product
               </Text>
               {productLinks.map((link) => (
                 <Link key={link.href} href={link.href} className="w-fit">
-                  <Text size="sm" color="text-secondary" className="transition-colors hover:text-primary">
+                  <Text
+                    size="sm"
+                    color="text-secondary"
+                    className="transition-colors hover:text-primary"
+                  >
                     {link.label}
                   </Text>
                 </Link>
@@ -60,12 +83,20 @@ export function Footer() {
             </div>
 
             <div className="flex flex-col gap-3">
-              <Text size="xs" weight="semibold" className="uppercase tracking-wide">
+              <Text
+                size="xs"
+                weight="semibold"
+                className="uppercase tracking-wide"
+              >
                 Legal
               </Text>
               {legalLinks.map((link) => (
                 <Link key={link.href} href={link.href} className="w-fit">
-                  <Text size="sm" color="text-secondary" className="transition-colors hover:text-primary">
+                  <Text
+                    size="sm"
+                    color="text-secondary"
+                    className="transition-colors hover:text-primary"
+                  >
                     {link.label}
                   </Text>
                 </Link>
