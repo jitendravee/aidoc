@@ -11,7 +11,7 @@ const sections = [
   // ========== NEW: Acceptance & Operator ==========
   {
     title: "0. Acceptance and Operator",
-    body: "These Terms govern your use of FlowPDF.online, operated by [Insert Your Legal Company Name], registered at [Insert Full Physical Address, City, Country]. By using the service, you agree to these terms. If you do not agree, please do not use the service.",
+    body: "These Terms govern your use of FlowPDF.online,By using the service, you agree to these terms. If you do not agree, please do not use the service.",
   },
   // =================================================
   {
@@ -53,7 +53,7 @@ const sections = [
   // ========== NEW: Governing Law & Jurisdiction ==========
   {
     title: "9. Governing Law and Jurisdiction",
-    body: "These Terms are governed by and construed in accordance with the laws of [Insert Country/State, e.g., Delaware, USA]. Any disputes arising out of or relating to these Terms shall be resolved exclusively in the courts located in [Insert City/County, e.g., Wilmington, Delaware]. You agree to submit to the personal jurisdiction of such courts.",
+    body: "These Terms are governed by and construed in accordance with the laws of Delaware, USA. Any disputes arising out of or relating to these Terms shall be resolved exclusively in the courts. You agree to submit to the personal jurisdiction of such courts.",
   },
   // =======================================================
 ];

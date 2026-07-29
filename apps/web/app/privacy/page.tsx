@@ -11,7 +11,7 @@ const sections = [
   // ========== NEW: Legal Entity Disclosure ==========
   {
     title: "0. About FlowPDF (Data Controller)",
-    body: "FlowPDF is operated by [Insert Your Legal Company Name], registered at [Insert Full Physical Address, City, Country]. For all privacy-related matters, contact our Data Protection representative directly at: support@flowpdf.online. This establishes the legal entity responsible for your data under applicable privacy laws (including GDPR and CCPA).",
+    body: "For all privacy-related matters, contact our Data Protection representative directly at: support@flowpdf.online. This establishes the legal entity responsible for your data under applicable privacy laws (including GDPR and CCPA).",
   },
   // ===================================================
   {
