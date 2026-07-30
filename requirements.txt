@@ -32,10 +32,12 @@ pycparser==3.0
 pydantic==2.13.4
 pydantic_core==2.46.4
 Pygments==2.20.0
+pymupdf==1.28.0
 pytest==9.1.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.2
 python-multipart==0.0.32
+python-pptx==1.0.2
 reportlab==5.0.0
 requests==2.34.2
 s3transfer==0.19.2
@@ -49,3 +51,4 @@ typing_extensions==4.16.0
 urllib3==2.7.0
 uvicorn==0.51.0
 websockets==16.1.1
+xlsxwriter==3.2.9
