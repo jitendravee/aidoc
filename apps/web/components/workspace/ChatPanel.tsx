@@ -3,7 +3,7 @@ import Text from "../ui/Text";
 import Button from "../ui/Button";
 import DocumentChip from "./DocumentChip";
 import TypingIndicator from "./TypingIndicator";
-import { ChevronsRight, Send, Sparkles } from "lucide-react";
+import { ChevronsRight, Download, Send, Sparkles } from "lucide-react";
 import type { WorkspaceDocument } from "@/lib/types/api";
 
 export interface ChatEntry {
@@ -36,9 +36,27 @@ export default function ChatPanel({
   onCollapse,
 }: ChatPanelProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const wasSending = useRef(false);
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [history, isSending]);
+
+  useEffect(() => {
+    if (wasSending.current && !isSending) {
+      inputRef.current?.focus();
+    }
+    wasSending.current = isSending;
+  }, [isSending]);
+  useEffect(() => {
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [history, isSending]);
 
   return (
@@ -59,7 +77,10 @@ export default function ChatPanel({
         </button>
       </div>
 
-      <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+      <div
+        ref={scrollRef}
+        className="flex-1 space-y-3 overflow-y-auto px-4 py-4"
+      >
         {history.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center gap-1.5 text-center">
             <Text size="sm" weight="medium">
@@ -78,21 +99,27 @@ export default function ChatPanel({
           >
             <div
               className={`max-w-[90%] rounded-lg px-3 py-2 ${
-                entry.role === "user" ? "bg-primary text-white" : "bg-surface-secondary"
+                entry.role === "user"
+                  ? "bg-primary text-white"
+                  : "bg-surface-secondary"
               }`}
             >
-              <Text size="sm" color={entry.role === "user" ? "foreground" : "text"} className={entry.role === "user" ? "!text-white" : ""}>
+              <Text
+                size="sm"
+                color={entry.role === "user" ? "foreground" : "text"}
+                className={entry.role === "user" ? "!text-white" : ""}
+              >
                 {entry.text}
               </Text>
 
               {entry.documents?.map((doc) => (
-                <DocumentChip
+                  <DocumentChip
                   key={doc.document_id}
-                  doc={doc}
-                  onView={onViewDoc}
-                  onUndo={onUndoDoc}
-                  isUndoing={isUndoing}
-                />
+                    doc={doc}
+                    onView={onViewDoc}
+                    onUndo={onUndoDoc}
+                    isUndoing={isUndoing}
+                  />
               ))}
             </div>
           </div>
@@ -107,6 +134,7 @@ export default function ChatPanel({
 
       <div className="flex items-center gap-2 border-t border-border p-3">
         <input
+          ref={inputRef}
           type="text"
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
@@ -115,7 +143,13 @@ export default function ChatPanel({
           disabled={isSending}
           className="flex-1 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
         />
-        <Button size="md" onClick={onSend} disabled={isSending} prefixIcon={<Send />} className="px-3">
+        <Button
+          size="md"
+          onClick={onSend}
+          disabled={isSending}
+          prefixIcon={<Send />}
+          className="px-3"
+        >
           Send
         </Button>
       </div>

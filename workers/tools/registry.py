@@ -1,6 +1,6 @@
 import pikepdf
 from workers.tools import (
-    delete_pages, merge_pdfs, protect_pdf, rotate_pages, split_pdf,
+    delete_pages, merge_pdfs, pdf_to_jpg, pdf_to_pptx, protect_pdf, rotate_pages, split_pdf,
     unlock_pdf, watermark_pdf, extract_pages, organize_pdf, crop_pdf,
     add_page_numbers, compress_pdf,
 )
@@ -51,6 +51,28 @@ TOOL_REGISTRY = {
         "output_count": 1,
         "params_schema": {"new_order": "list[int] — every original page number exactly once, in the new order"},
     },
+"pdf_to_jpg": {
+    "input_model": pdf_to_jpg.PdfToJpgInput,
+    "run": pdf_to_jpg.run,
+    "description": "Convert every page of a PDF into a separate JPG image.",
+    "arity": "single",
+    "category": "conversion",
+    "output_count": "dynamic",
+    "output_kind": "image",
+    "zip_outputs": True,   # NEW — bundle N images into one .zip instead of N documents
+    "params_schema": {"dpi": "int, default 150 — image resolution"},
+},
+"pdf_to_pptx": {
+    "input_model": pdf_to_pptx.PdfToPptxInput,
+    "run": pdf_to_pptx.run,
+    "description": "Convert a PDF into a PowerPoint presentation, one slide per page.",
+    "arity": "single",
+    "category": "conversion",
+    "output_count": 1,
+    "output_kind": "pptx",
+    "params_schema": {"dpi": "int, default 150 — image resolution per slide"},
+    "usage_notes": ["Slides are image-based, not editable text — mention this if the user expects editable content."],
+},
 # workers/tools/registry.py — just the crop_pdf entry shown, add usage_notes similarly to any tool that needs it
     "crop_pdf": {
         "input_model": crop_pdf.CropPdfInput,

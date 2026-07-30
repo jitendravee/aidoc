@@ -22,7 +22,7 @@ import {
   Sparkles,
   PenLine,
   EyeOff,
-  Sparkle,
+  Sparkle, Image, 
   type LucideIcon,
 } from "lucide-react";
 
@@ -54,6 +54,8 @@ const ICON_MAP: Record<string, LucideIcon> = {
   watermark_pdf: Stamp,
 
   // Convert
+  pdf_to_jpg: Image,
+  pdf_to_pptx: Presentation,
   pdf_to_word: FileText,
   pdf_to_powerpoint: Presentation,
   pdf_to_excel: FileSpreadsheet,
@@ -76,7 +78,8 @@ const CATEGORY_STYLES: Record<string, { bg: string; text: string }> = {
   security: { bg: "bg-rose-50", text: "text-rose-600" },
   convert: { bg: "bg-amber-50", text: "text-amber-600" },
   extract: { bg: "bg-emerald-50", text: "text-emerald-600" },
-  ai: { bg: "bg-fuchsia-50", text: "text-fuchsia-600" },
+  ai: { bg: "bg-fuchsia-50", text: "text-fuchsia-600" },  conversion: { bg: "bg-amber-50", text: "text-amber-600" },
+
 };
 
 function getIcon(name: string): LucideIcon {

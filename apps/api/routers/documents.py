@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, UploadFile
 from pydantic import BaseModel
 import uuid, shutil, os, pikepdf
 
+from apps.api.services.kinds import kind_mime_type
 from apps.api.storage.b2_client import upload_file, get_presigned_download_url
 from apps.api.db.repository import (
     create_document, create_version, get_document_filename,
@@ -11,6 +12,13 @@ from apps.api.services.pending_uploads import create_pending_upload, pop_pending
 
 router = APIRouter()
 CACHE_DIR = "cache"
+
+
+def _pdf_download_url(storage_key: str) -> str:
+    """Every endpoint in this file only ever deals with original PDF
+    uploads/versions, so the mime type is always pdf's — one helper so
+    that doesn't get re-typed (and re-typo'd) at each call site."""
+    return get_presigned_download_url(storage_key, mime_type=kind_mime_type("pdf"), inline=True)
 
 
 @router.post("/documents/{document_id}/undo")
@@ -23,9 +31,13 @@ async def undo_document(document_id: str):
     return {
         "document_id": document_id,
         "filename": get_document_filename(document_id),
-        "download_url": get_presigned_download_url(new_head["storage_key"], inline=True),
+        "download_url": _pdf_download_url(new_head["storage_key"]),
+        "kind": "pdf",
         "page_count": new_head["page_count"],
         "can_undo": new_head["parent_version_id"] is not None,
+        "group_id": None,
+        "group_index": None,
+        "group_total": None,
     }
 
 
@@ -39,9 +51,13 @@ async def get_document(document_id: str):
     return {
         "document_id": document_id,
         "filename": get_document_filename(document_id),
-        "download_url": get_presigned_download_url(head["storage_key"], inline=True),
+        "download_url": _pdf_download_url(head["storage_key"]),
+        "kind": "pdf",
         "page_count": head["page_count"],
         "can_undo": head["parent_version_id"] is not None,
+        "group_id": None,
+        "group_index": None,
+        "group_total": None,
     }
 
 
@@ -58,22 +74,26 @@ async def upload_document(file: UploadFile):
     except pikepdf.PasswordError:
         # don't create a document yet — hold the raw bytes and make the
         # frontend collect a password before this becomes a real document
-        token = create_pending_upload(temp_path, file.filename) # type: ignore
+        token = create_pending_upload(temp_path, file.filename)  # type: ignore
         return {"status": "password_required", "upload_token": token, "filename": file.filename}
 
-    document_id = create_document(file.filename) # type: ignore
+    document_id = create_document(file.filename)  # type: ignore
     storage_key = f"{document_id}/v0.pdf"
     upload_file(temp_path, storage_key)
     create_version(document_id, storage_key, page_count, "Initial upload.")
     os.remove(temp_path)
 
-    download_url = get_presigned_download_url(storage_key, inline=True)
     return {
         "status": "success",
         "document_id": document_id,
         "filename": file.filename,
-        "download_url": download_url,
+        "download_url": _pdf_download_url(storage_key),
+        "kind": "pdf",
         "page_count": page_count,
+        "can_undo": False,
+        "group_id": None,
+        "group_index": None,
+        "group_total": None,
     }
 
 
@@ -113,6 +133,11 @@ async def complete_upload(body: CompleteUploadRequest):
         "status": "success",
         "document_id": document_id,
         "filename": filename,
-        "download_url": get_presigned_download_url(storage_key, inline=True),
+        "download_url": _pdf_download_url(storage_key),
+        "kind": "pdf",
         "page_count": page_count,
+        "can_undo": False,
+        "group_id": None,
+        "group_index": None,
+        "group_total": None,
     }

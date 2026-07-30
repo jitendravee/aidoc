@@ -19,15 +19,22 @@ def upload_file(local_path: str, key: str) -> None:
     client = get_b2_client()
     client.upload_file(local_path, os.environ["B2_BUCKET_NAME"], key)
 
-# apps/api/storage/b2_client.py
-def get_presigned_download_url(key: str, expires_in_seconds: int = 3600, inline: bool = True) -> str:
+
+
+def delete_file(key: str) -> None:
+    client = get_b2_client()
+    client.delete_object(Bucket=os.environ["B2_BUCKET_NAME"], Key=key)# apps/api/storage/b2_client.py
+def get_presigned_download_url(
+    key: str,
+    mime_type: str = "application/pdf",
+    inline: bool = True,
+    expires_in_seconds: int = 3600,
+) -> str:
     client = get_b2_client()
     params = {"Bucket": os.environ["B2_BUCKET_NAME"], "Key": key}
     if inline:
         params["ResponseContentDisposition"] = "inline"
-        params["ResponseContentType"] = "application/pdf"
+        params["ResponseContentType"] = mime_type
+    else:
+        params["ResponseContentDisposition"] = "attachment"
     return client.generate_presigned_url("get_object", Params=params, ExpiresIn=expires_in_seconds)
-
-def delete_file(key: str) -> None:
-    client = get_b2_client()
-    client.delete_object(Bucket=os.environ["B2_BUCKET_NAME"], Key=key)

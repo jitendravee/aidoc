@@ -40,16 +40,29 @@ export default function WorkspaceContent() {
       document_id: id,
       filename: "Document",
       download_url: "",
-      page_count: 0,
+
+      kind: "pdf", // placeholder until real metadata is loaded
+      page_count: null,
+
+      can_undo: false,
+
+      group_id: null,
+      group_index: null,
+      group_total: null,
     })),
   );
   const [activeDocId, setActiveDocId] = useState<string | null>(
     initialIds[0] ?? null,
   );
-  const [pendingUploadPasswords, setPendingUploadPasswords] = useState<PendingUploadPassword[]>([]);
+  const [pendingUploadPasswords, setPendingUploadPasswords] = useState<
+    PendingUploadPassword[]
+  >([]);
 
-const [isSubmittingUploadPassword, setIsSubmittingUploadPassword] = useState(false);
-const [uploadPasswordError, setUploadPasswordError] = useState<string | undefined>(undefined);
+  const [isSubmittingUploadPassword, setIsSubmittingUploadPassword] =
+    useState(false);
+  const [uploadPasswordError, setUploadPasswordError] = useState<
+    string | undefined
+  >(undefined);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<ChatEntry[]>([]);
   const [chatPct, setChatPct] = useState(DEFAULT_CHAT_PCT);
@@ -170,73 +183,77 @@ const [uploadPasswordError, setUploadPasswordError] = useState<string | undefine
     setHistory((prev) => [...prev, { role: "user", text: userMessage }]);
     setInput("");
 
-    sendMessage.mutate(userMessage, {
-      onSuccess: (data) => {
-        if (data.status === "password_required") {
-          setPendingSecureAction({
-            tool: data.tool,
-            documentId: data.document_id,
-            pendingSteps: data.pending_steps ?? [],
+   sendMessage.mutate(userMessage, {
+  onSuccess: (data) => {
+    if (data.status === "password_required") {
+      setPendingSecureAction({
+        tool: data.tool,
+        documentId: data.document_id,
+        pendingSteps: data.pending_steps ?? [],
+      });
+      return;
+    }
+    if (data.status === "success") {
+      setDocuments(data.documents);
+      syncWorkspaceUrl(data.documents);
+      setActiveDocId(data.documents[0]?.document_id ?? null);
+      setHistory((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          text: data.diff_summary,
+          documents: data.documents,
+        },
+      ]);
+    } else if (data.status === "clarification_needed") {
+      // ✅ Use data.message (the backend sends "message", not "question")
+      setHistory((prev) => [
+        ...prev,
+        { role: "assistant", text: data.message || data.question || "Clarification needed" },
+      ]);
+    } else if (data.status === "chat" || data.status === "unsupported") {
+      setHistory((prev) => [
+        ...prev,
+        { role: "assistant", text: data.message, timestamp: timestamp() },
+      ]);
+    } else {
+      setHistory((prev) => [
+        ...prev,
+        { role: "assistant", text: `Error: ${data.message}` },
+      ]);
+    }
+  },
+  onError: (error) => {
+    setHistory((prev) => [
+      ...prev,
+      { role: "assistant", text: `Request failed: ${error.message}` },
+    ]);
+  },
+});
+  }
+
+  function handleAddFiles(files: File[]) {
+    addDocuments.mutate(files, {
+      onSuccess: ({ results, passwordPrompts }) => {
+        if (results.length > 0) {
+          setDocuments((prev) => {
+            const updated = [...prev, ...results];
+            syncWorkspaceUrl(updated);
+            return updated;
           });
-          return;
+          setActiveDocId(results[0].document_id);
         }
-        if (data.status === "success") {
-          setDocuments(data.documents);
-          syncWorkspaceUrl(data.documents);
-          setActiveDocId(data.documents[0]?.document_id ?? null);
-          setHistory((prev) => [
-            ...prev,
-            {
-              role: "assistant",
-              text: data.diff_summary,
-              documents: data.documents,
-            },
-          ]);
-        } else if (data.status === "clarification_needed") {
-          setHistory((prev) => [
-            ...prev,
-            { role: "assistant", text: data.question },
-          ]);
-        } else if (data.status === "chat" || data.status === "unsupported") {
-          setHistory((prev) => [
-            ...prev,
-            { role: "assistant", text: data.message, timestamp: timestamp() },
-          ]);
-        } else {
-          setHistory((prev) => [
-            ...prev,
-            { role: "assistant", text: `Error: ${data.message}` },
-          ]);
+        if (passwordPrompts.length > 0) {
+          setPendingUploadPasswords(
+            passwordPrompts.map((p: any) => ({
+              uploadToken: p.upload_token,
+              filename: p.filename,
+            })),
+          );
         }
-      },
-      onError: (error) => {
-        setHistory((prev) => [
-          ...prev,
-          { role: "assistant", text: `Request failed: ${error.message}` },
-        ]);
       },
     });
   }
-
-function handleAddFiles(files: File[]) {
-  addDocuments.mutate(files, {
-    onSuccess: ({ results, passwordPrompts }) => {
-      if (results.length > 0) {
-        setDocuments((prev) => {
-          const updated = [...prev, ...results];
-          syncWorkspaceUrl(updated);
-          return updated;
-        });
-        setActiveDocId(results[0].document_id);
-      }
-      if (passwordPrompts.length > 0) {
-        setPendingUploadPasswords(
-          passwordPrompts.map((p: any) => ({ uploadToken: p.upload_token, filename: p.filename }))
-        );
-      }
-    },
-  });
-}
   if (isHydrating) {
     return (
       <div className="flex h-screen  flex-col items-center justify-center gap-2">
@@ -247,36 +264,36 @@ function handleAddFiles(files: File[]) {
       </div>
     );
   }
-async function handleUploadPasswordSubmit(password: string) {
-  const current = pendingUploadPasswords[0];
-  setIsSubmittingUploadPassword(true);
-  setUploadPasswordError(undefined);
+  async function handleUploadPasswordSubmit(password: string) {
+    const current = pendingUploadPasswords[0];
+    setIsSubmittingUploadPassword(true);
+    setUploadPasswordError(undefined);
 
-  const result = await completeUpload(current.uploadToken, password);
-  setIsSubmittingUploadPassword(false);
+    const result = await completeUpload(current.uploadToken, password);
+    setIsSubmittingUploadPassword(false);
 
-  if (result.status === "error") {
-    setUploadPasswordError(result.message);
-    setPendingUploadPasswords((prev) => [
-      { uploadToken: result.upload_token, filename: current.filename },
-      ...prev.slice(1),
-    ]);
-    return;
+    if (result.status === "error") {
+      setUploadPasswordError(result.message);
+      setPendingUploadPasswords((prev) => [
+        { uploadToken: result.upload_token, filename: current.filename },
+        ...prev.slice(1),
+      ]);
+      return;
+    }
+
+    setDocuments((prev) => {
+      const updated = [...prev, result];
+      syncWorkspaceUrl(updated);
+      return updated;
+    });
+    setActiveDocId(result.document_id);
+    setPendingUploadPasswords((prev) => prev.slice(1));
   }
 
-  setDocuments((prev) => {
-    const updated = [...prev, result];
-    syncWorkspaceUrl(updated);
-    return updated;
-  });
-  setActiveDocId(result.document_id);
-  setPendingUploadPasswords((prev) => prev.slice(1));
-}
-
-function handleCancelUploadPassword() {
-  setPendingUploadPasswords((prev) => prev.slice(1));
-  setUploadPasswordError(undefined);
-}
+  function handleCancelUploadPassword() {
+    setPendingUploadPasswords((prev) => prev.slice(1));
+    setUploadPasswordError(undefined);
+  }
   const activeDoc = documents.find((d) => d.document_id === activeDocId);
   function handleMobileTabChange(tab: MobileTab) {
     setMobileTab(tab);
@@ -374,23 +391,15 @@ function handleCancelUploadPassword() {
           </>
         )}
 
-       {pendingSecureAction ? (
-  <PasswordModal
-    tool={pendingSecureAction.tool}
-    onSubmit={handleSecureSubmit}
-    onCancel={() => setPendingSecureAction(null)}
-    isSubmitting={secureAction.isPending}
-    error={secureAction.data?.status !== "success" ? secureAction.data?.message : undefined}
-  />
-) : pendingUploadPasswords.length > 0 ? (
-  <PasswordModal
-    tool="unlock_pdf"
-    onSubmit={handleUploadPasswordSubmit}
-    onCancel={handleCancelUploadPassword}
-    isSubmitting={isSubmittingUploadPassword}
-    error={uploadPasswordError}
-  />
-) : null}
+        {pendingUploadPasswords.length > 0 && (
+          <PasswordModal
+            tool="unlock_pdf"
+            onSubmit={handleUploadPasswordSubmit}
+            onCancel={handleCancelUploadPassword}
+            isSubmitting={isSubmittingUploadPassword}
+            error={uploadPasswordError}
+          />
+        )}
       </div>
     </>
   );

@@ -1,10 +1,13 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from collections import Counter
 import os, uuid, pikepdf
 
 from apps.api.ai.planner import plan
 from apps.api.services.executor import execute_plan
+from apps.api.services.kinds import kind_extension, kind_is_inline, kind_mime_type
+from apps.api.services.pending_secure_actions import (
+    create_pending_secure_action, pop_pending_secure_action,
+)
 from apps.api.storage.b2_client import upload_file, download_file, get_presigned_download_url
 from apps.api.db.repository import (
     get_head_version, create_document, create_version,
@@ -13,6 +16,12 @@ from apps.api.db.repository import (
 
 router = APIRouter()
 CACHE_DIR = "cache"
+
+# messages that cancel an in-progress password prompt instead of being
+# treated as a password attempt
+_CANCEL_WORDS = {"cancel", "stop", "nevermind", "never mind", "never  mind", "no"}
+
+
 def _open_maybe_encrypted(path: str, password: str | None = None):
     try:
         return pikepdf.open(path)
@@ -22,6 +31,12 @@ def _open_maybe_encrypted(path: str, password: str | None = None):
         return pikepdf.open(path, password=password)
 
 
+def _get_page_count(path: str, kind: str, password: str | None = None) -> int | None:
+    if kind != "pdf":
+        return None
+    with _open_maybe_encrypted(path, password) as pdf:
+        return len(pdf.pages)
+
 
 def _build_response_documents(
     result: dict,
@@ -30,77 +45,73 @@ def _build_response_documents(
     password: str | None = None,
 ) -> list[dict]:
     response_documents = []
-    label_counts = Counter(tuple(entry["labels"]) for entry in result["results"])
-    split_part_counter: dict[tuple, int] = {}
 
     for entry in result["results"]:
         labels = entry["labels"]
-        local_path = entry["path"]
-        labels_key = tuple(labels)
-        is_fanout = label_counts[labels_key] > 1
+        paths = entry["paths"]
+        kind = entry["kind"]
+        group_id = str(uuid.uuid4()) if len(paths) > 1 else None
+        group_total = len(paths) if len(paths) > 1 else None
 
-        if not is_fanout and len(labels) == 1 and local_path == doc_paths[labels[0]]:
+        # unchanged original: same file, no new version was written
+        if kind == "pdf" and len(paths) == 1 and len(labels) == 1 and paths[0] == doc_paths[labels[0]]:
             target_doc_id = label_to_doc_id[labels[0]]
             head = get_head_version(target_doc_id)
             response_documents.append({
                 "document_id": target_doc_id,
                 "filename": get_document_filename(target_doc_id),
-                "download_url": get_presigned_download_url(head["storage_key"], inline=True),
+                "download_url": get_presigned_download_url(
+                    head["storage_key"],
+                    mime_type=kind_mime_type("pdf"),
+                    inline=True,
+                ),
+                "kind": "pdf",
                 "page_count": head["page_count"],
                 "can_undo": head["parent_version_id"] is not None,
+                "group_id": None, "group_index": None, "group_total": None,
             })
             continue
 
-        with _open_maybe_encrypted(local_path, password) as pdf:
-            page_count = len(pdf.pages)
+        for i, local_path in enumerate(paths, start=1):
+            page_count = _get_page_count(local_path, kind, password)
+            ext = kind_extension(kind)
 
-        if not is_fanout and len(labels) == 1:
-            target_doc_id = label_to_doc_id[labels[0]]
-            head = get_head_version(target_doc_id)
-            new_storage_key = f"{target_doc_id}/v_{uuid.uuid4().hex[:8]}.pdf"
-            upload_file(local_path, new_storage_key)
-            create_version(target_doc_id, new_storage_key, page_count, result["diff_summary"], parent_version_id=head["version_id"])
-            response_documents.append({
-                "document_id": target_doc_id,
-                "filename": get_document_filename(target_doc_id),
-                "download_url": get_presigned_download_url(new_storage_key, inline=True),
-                "page_count": page_count,
-                "can_undo": True,
-            })
+            if kind == "pdf" and len(paths) == 1 and len(labels) == 1:
+                target_doc_id = label_to_doc_id[labels[0]]
+                head = get_head_version(target_doc_id)
+                new_storage_key = f"{target_doc_id}/v_{uuid.uuid4().hex[:8]}.pdf"
+                upload_file(local_path, new_storage_key)
+                create_version(target_doc_id, new_storage_key, page_count, result["diff_summary"], parent_version_id=head["version_id"])
+                filename = get_document_filename(target_doc_id)
+                can_undo = True
+            else:
+                source_name = get_document_filename(label_to_doc_id[labels[0]]) if len(labels) == 1 else "document"
+                base_name = os.path.splitext(source_name)[0]
+                suffix = f"_part{i}" if len(paths) > 1 else ""
+                filename = f"{base_name}{suffix}{ext}"
 
-        elif is_fanout:
-            split_part_counter[labels_key] = split_part_counter.get(labels_key, 0) + 1
-            part_number = split_part_counter[labels_key]
-            source_name = get_document_filename(label_to_doc_id[labels[0]]) if len(labels) == 1 else "document"
-            base_name = os.path.splitext(source_name)[0]
-            filename = f"{base_name}_part{part_number}.pdf"
+                target_doc_id = create_document(filename)
+                new_storage_key = f"{target_doc_id}/v0{ext}"
+                upload_file(local_path, new_storage_key)
+                create_version(target_doc_id, new_storage_key, page_count, result["diff_summary"])
+                can_undo = False
 
-            target_doc_id = create_document(filename)
-            new_storage_key = f"{target_doc_id}/v0.pdf"
-            upload_file(local_path, new_storage_key)
-            create_version(target_doc_id, new_storage_key, page_count, result["diff_summary"])
             response_documents.append({
                 "document_id": target_doc_id,
                 "filename": filename,
-                "download_url": get_presigned_download_url(new_storage_key, inline=True),
+                "download_url": get_presigned_download_url(
+                    new_storage_key,
+                    mime_type=kind_mime_type(kind),
+                    inline=kind_is_inline(kind),
+                ),
+                "kind": kind,
                 "page_count": page_count,
-                "can_undo": False,
+                "can_undo": can_undo,
+                "group_id": group_id,
+                "group_index": i if group_total else None,
+                "group_total": group_total,
             })
-
-        else:
-            target_doc_id = create_document("merged_result.pdf")
-            new_storage_key = f"{target_doc_id}/v0.pdf"
-            upload_file(local_path, new_storage_key)
-            create_version(target_doc_id, new_storage_key, page_count, result["diff_summary"])
-            response_documents.append({
-                "document_id": target_doc_id,
-                "filename": "merged_result.pdf",
-                "download_url": get_presigned_download_url(new_storage_key, inline=True),
-                "page_count": page_count,
-                "can_undo": False,
-            })
-
-        os.remove(local_path)
+            os.remove(local_path)
 
     return response_documents
 
@@ -114,14 +125,24 @@ class SendMessageRequest(BaseModel):
 @router.post("/workspace/messages")
 async def send_message(body: SendMessageRequest):
     os.makedirs(CACHE_DIR, exist_ok=True)
-
     primary_doc_id = body.document_ids[0]
+
+    # If the last assistant turn asked this conversation for a password,
+    # this message IS the password (or a cancel) — never route it through
+    # the planner, and never persist the raw password text to history.
+    pending_secure = pop_pending_secure_action(primary_doc_id)
+    if pending_secure is not None:
+        if body.message.strip().lower() in _CANCEL_WORDS:
+            save_message(primary_doc_id, "user", "[cancelled]")
+            reply_text = "No problem — cancelled. Let me know if you'd like to try again."
+            save_message(primary_doc_id, "assistant", reply_text)
+            return {"status": "chat", "message": reply_text, "error_code": None, "awaiting_password": False}
+        return await _handle_secure_password(body, primary_doc_id, pending_secure)
+
     save_message(primary_doc_id, "user", body.message)
     history = get_recent_messages(primary_doc_id, limit=6)
 
-    doc_meta = {}
-    label_to_doc_id = {}
-    documents_for_planner = []
+    doc_meta, label_to_doc_id, documents_for_planner = {}, {}, []
     for i, doc_id in enumerate(body.document_ids, start=1):
         label = f"doc_{i}"
         label_to_doc_id[label] = doc_id
@@ -131,16 +152,23 @@ async def send_message(body: SendMessageRequest):
 
     result_plan = plan(body.message, documents_for_planner, history=history)
 
-    # password_required is deliberately NOT saved to chat history — no
-    # password has been typed yet, but we also don't want "protect_pdf
-    # needs a password" logged verbatim either; keep it structural only
     if result_plan["type"] == "password_required":
         target_label = result_plan["target"]
+        action = "set" if result_plan["tool"] == "protect_pdf" else "use to unlock it"
+        create_pending_secure_action(
+            document_id=primary_doc_id,
+            tool=result_plan["tool"],
+            target_label=target_label,
+            pending_steps=result_plan.get("pending_steps", []),
+            label_to_doc_id=label_to_doc_id,
+        )
+        reply_text = f"Sure — what password would you like to {action}?"
+        save_message(primary_doc_id, "assistant", reply_text)
         return {
-            "status": "password_required",
-            "tool": result_plan["tool"],
-            "document_id": label_to_doc_id[target_label],
-            "pending_steps": result_plan.get("pending_steps", []),
+            "status": "clarification_needed",
+            "message": reply_text,
+            "error_code": None,
+            "awaiting_password": True,
         }
 
     if result_plan["type"] in ("chat", "unsupported", "clarification"):
@@ -148,8 +176,9 @@ async def send_message(body: SendMessageRequest):
         save_message(primary_doc_id, "assistant", reply_text)
         return {
             "status": "clarification_needed" if result_plan["type"] == "clarification" else result_plan["type"],
-            "question": reply_text if result_plan["type"] == "clarification" else None,
             "message": reply_text,
+            "error_code": None,
+            "awaiting_password": False,
         }
 
     doc_paths = {}
@@ -164,76 +193,82 @@ async def send_message(body: SendMessageRequest):
         for p in doc_paths.values():
             if os.path.exists(p):
                 os.remove(p)
-        reply_text = result.get("question") or result.get("message", "Something went wrong.")
+        error_obj = result.get("error") or {}
+        reply_text = result.get("question") or error_obj.get("message", "Something went wrong — please try again.")
         save_message(primary_doc_id, "assistant", reply_text)
-        return result
+        return {"status": "error", "message": reply_text, "error_code": error_obj.get("code"), "awaiting_password": False}
 
     response_documents = _build_response_documents(result, doc_paths, label_to_doc_id)
-
     for p in doc_paths.values():
         if os.path.exists(p):
             os.remove(p)
 
     save_message(primary_doc_id, "assistant", result["diff_summary"])
-
     return {
         "status": "success",
         "documents": response_documents,
         "diff_summary": result["diff_summary"],
+        "awaiting_password": False,
     }
 
 
-class SecureActionRequest(BaseModel):
-    workspace_id: str
-    document_id: str
-    tool: str
-    password: str
-    pending_steps: list[dict] = []
+async def _handle_secure_password(body: SendMessageRequest, primary_doc_id: str, pending_secure: dict) -> dict:
+    password = body.message.strip()
+    tool = pending_secure["tool"]
+    target_label = pending_secure["target_label"]
+    pending_steps = pending_secure["pending_steps"]
+    label_to_doc_id = pending_secure["label_to_doc_id"]
 
-@router.post("/workspace/messages/secure")
-async def secure_action(body: SecureActionRequest):
-    if body.tool not in ("protect_pdf", "unlock_pdf"):
-        raise HTTPException(status_code=400, detail="Unsupported secure action")
+    # never write the raw password into chat history
+    save_message(primary_doc_id, "user", "[password provided]")
 
-    os.makedirs(CACHE_DIR, exist_ok=True)
-    head = get_head_version(body.document_id)
-    path = os.path.join(CACHE_DIR, f"doc_1_{uuid.uuid4().hex}.pdf")
-    download_file(head["storage_key"], path)
-    doc_paths = {"doc_1": path}
-    label_to_doc_id = {"doc_1": body.document_id}
-
-    # NOTE: pending_steps referencing a SECOND document (e.g. a merge)
-    # aren't supported here yet — this endpoint only ever downloads
-    # doc_1. Combined password actions currently only work when every
-    # pending step stays within the single document being secured.
-    pending_steps = body.pending_steps or []
-    secure_input_key = pending_steps[-1]["output"] if pending_steps else "doc_1"
+    needed_labels = {target_label} | {key for step in pending_steps for key in step["inputs"]}
+    doc_paths = {}
+    for label in needed_labels:
+        doc_id = label_to_doc_id[label]
+        head = get_head_version(doc_id)
+        path = os.path.join(CACHE_DIR, f"{label}_{uuid.uuid4().hex}.pdf")
+        download_file(head["storage_key"], path)
+        doc_paths[label] = path
 
     steps = pending_steps + [{
-        "id": f"{body.tool}_final",
-        "tool": body.tool,
-        "inputs": [secure_input_key],
+        "id": f"{tool}_final",
+        "tool": tool,
+        "inputs": [target_label],
         "output": "result",
-        "params": {"password": body.password},
+        "params": {"password": password},
     }]
-
     manual_plan = {"type": "workflow", "steps": steps, "final_outputs": ["result"]}
 
     result = execute_plan(manual_plan, doc_paths, CACHE_DIR)
 
     if result["status"] != "success":
-        if os.path.exists(path):
-            os.remove(path)
-        reply_text = result.get("message", "Couldn't complete that — check the password and try again.")
-        save_message(body.document_id, "assistant", reply_text)
-        return result
+        for p in doc_paths.values():
+            if os.path.exists(p):
+                os.remove(p)
+        error_obj = result.get("error") or {}
+        reply_text = error_obj.get("message") or "That didn't work — check the password and try again, or say 'cancel'."
+        # re-arm: the *next* message is still treated as a password attempt
+        create_pending_secure_action(primary_doc_id, tool, target_label, pending_steps, label_to_doc_id)
+        save_message(primary_doc_id, "assistant", reply_text)
+        return {
+            "status": "clarification_needed",
+            "message": reply_text,
+            "error_code": error_obj.get("code"),
+            "awaiting_password": True,
+        }
 
-    response_documents = _build_response_documents(result, doc_paths, label_to_doc_id, password=body.password)
-    if os.path.exists(path):
-        os.remove(path)
+    response_documents = _build_response_documents(result, doc_paths, label_to_doc_id, password=password)
+    for p in doc_paths.values():
+        if os.path.exists(p):
+            os.remove(p)
 
-    action_label = "Protected" if body.tool == "protect_pdf" else "Unlocked"
-    summary = f"{result['diff_summary']} {action_label} the document."  # includes the pending edits' own diff text
-    save_message(body.document_id, "assistant", summary)
-
-    return {"status": "success", "documents": response_documents, "diff_summary": summary}
+    action_label = "Protected" if tool == "protect_pdf" else "Unlocked"
+    summary = f"{result['diff_summary']}".strip() or f"{action_label} the document."
+    save_message(primary_doc_id, "assistant", summary)
+    return {
+        "status": "success",
+        "documents": response_documents,
+        "diff_summary": summary,
+        "awaiting_password": False,
+    }

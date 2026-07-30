@@ -5,9 +5,12 @@ def get_output_keys(step: dict) -> list[str] | None:
         outputs = step["outputs"]
         if not isinstance(outputs, list) or not outputs:
             return None
+        if not all(isinstance(k, str) and k for k in outputs):
+            return None
         return outputs
-    if step.get("output"):
-        return [step["output"]]
+    output = step.get("output")
+    if isinstance(output, str) and output:
+        return [output]
     return None
 
 

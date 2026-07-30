@@ -14,6 +14,7 @@ class ToolErrorCode(str, Enum):
     INTERNAL_ERROR = "INTERNAL_ERROR"
 
 
+
 class ToolError(Exception):
     def __init__(self, code: ToolErrorCode, message: str):
         self.code = code
