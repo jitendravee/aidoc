@@ -544,12 +544,14 @@ export function getRelatedPosts(slug: string, count = 3): BlogPost[] {
     let overlap = 0;
     for (const w of words) if (currentWords.has(w)) overlap++;
     return { post, overlap };
+    
   });
-
+ 
   scored.sort((a, b) => {
     if (b.overlap !== a.overlap) return b.overlap - a.overlap;
     return new Date(b.post.publishedAt).getTime() - new Date(a.post.publishedAt).getTime();
   });
+
 
   return scored.slice(0, count).map((s) => s.post);
 }
