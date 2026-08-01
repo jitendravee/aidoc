@@ -46,9 +46,6 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "FlowPDF" }],
   creator: "FlowPDF",
-  alternates: {
-    canonical: SITE_URL,
-  },
   openGraph: {
     type: "website",
     url: SITE_URL,
@@ -88,6 +85,15 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
+  // <link rel="alternate" type="application/rss+xml"> lets feed readers and
+  // some crawlers auto-discover the blog feed from any page, without the
+  // user having to know the /blog/rss.xml URL ahead of time.
+  alternates: {
+    canonical: SITE_URL,
+    types: {
+      "application/rss+xml": [{ url: "/blog/rss.xml", title: "FlowPDF Blog RSS Feed" }],
+    },
   },
 };
 

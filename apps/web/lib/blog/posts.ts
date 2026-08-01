@@ -498,3 +498,58 @@ export const BLOG_POSTS: BlogPost[] = [
 export function getPostBySlug(slug: string): BlogPost | undefined {
   return BLOG_POSTS.find((p) => p.slug === slug);
 }
+
+// Finds the section that actually contains a sequential "how to do this"
+// step list (every post has one, titled "How to X online for free"). Used
+// to emit HowTo structured data straight from the existing content instead
+// of maintaining a second, parallel steps list that could drift out of
+// sync — and it means HowTo schema only appears where the content genuinely
+// supports it, per Google's guidance not to add HowTo to non-instructional
+// pages.
+export function getHowToSection(post: BlogPost): BlogPostSection | undefined {
+  return post.sections.find(
+    (s) => /^how to\b/i.test(s.heading) && s.list && s.list.length > 0
+  );
+}
+
+// Simple, deterministic "related articles" picker: scores every other post by
+// shared significant words with the current post's title + description, then
+// falls back to most recently published so every post always has 3 related
+// links. This is what lets each article page link to related articles per
+// the internal-linking pass, without hand-maintaining a related-posts map
+// that drifts out of date as posts are added.
+const STOPWORDS = new Set([
+  "a", "an", "the", "to", "of", "in", "on", "for", "and", "or", "is", "your",
+  "you", "how", "with", "without", "into", "free", "pdf", "pdfs", "online",
+  "no", "signup", "add", "from",
+]);
+
+function significantWords(text: string): Set<string> {
+  return new Set(
+    text
+      .toLowerCase()
+      .split(/[^a-z0-9]+/)
+      .filter((w) => w.length > 2 && !STOPWORDS.has(w))
+  );
+}
+
+export function getRelatedPosts(slug: string, count = 3): BlogPost[] {
+  const current = getPostBySlug(slug);
+  if (!current) return [];
+
+  const currentWords = significantWords(`${current.title} ${current.description}`);
+
+  const scored = BLOG_POSTS.filter((p) => p.slug !== slug).map((post) => {
+    const words = significantWords(`${post.title} ${post.description}`);
+    let overlap = 0;
+    for (const w of words) if (currentWords.has(w)) overlap++;
+    return { post, overlap };
+  });
+
+  scored.sort((a, b) => {
+    if (b.overlap !== a.overlap) return b.overlap - a.overlap;
+    return new Date(b.post.publishedAt).getTime() - new Date(a.post.publishedAt).getTime();
+  });
+
+  return scored.slice(0, count).map((s) => s.post);
+}
