@@ -76,7 +76,7 @@ export default function DocumentTabBar({
           color="text-secondary"
           className={isAdding ? "" : "group-hover:text-primary"}
         >
-          {isAdding ? "Adding…" : "Add PDF"}
+          {isAdding ? "Adding…" : "Add File"}
         </Text>
       </button>
     </div>

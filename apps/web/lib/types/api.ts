@@ -27,3 +27,4 @@ export interface WorkspaceDocument {
   group_index: number | null;
   group_total: number | null;
 }
+export const ACCEPTED_UPLOAD_TYPES = ".pdf,.jpg,.jpeg,.png,.docx";

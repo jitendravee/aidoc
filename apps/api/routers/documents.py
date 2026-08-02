@@ -18,8 +18,7 @@ CACHE_DIR = "cache"
 # What a plain file-picker upload will accept today. docx/pptx/xlsx stay
 # out of this set for now since there's no "upload one directly" flow yet
 # — add them here the day you add a tool that consumes them as a source.
-ACCEPTED_UPLOAD_FORMATS = {"pdf", "jpg", "png"}
-
+ACCEPTED_UPLOAD_FORMATS = {"pdf", "jpg", "png", "docx"}
 
 def _download_url_for(storage_key: str, fmt: str) -> str:
     return get_presigned_download_url(

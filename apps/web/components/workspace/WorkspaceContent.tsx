@@ -183,53 +183,56 @@ export default function WorkspaceContent() {
     setHistory((prev) => [...prev, { role: "user", text: userMessage }]);
     setInput("");
 
-   sendMessage.mutate(userMessage, {
-  onSuccess: (data) => {
-    if (data.status === "password_required") {
-      setPendingSecureAction({
-        tool: data.tool,
-        documentId: data.document_id,
-        pendingSteps: data.pending_steps ?? [],
-      });
-      return;
-    }
-    if (data.status === "success") {
-      setDocuments(data.documents);
-      syncWorkspaceUrl(data.documents);
-      setActiveDocId(data.documents[0]?.document_id ?? null);
-      setHistory((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          text: data.diff_summary,
-          documents: data.documents,
-        },
-      ]);
-    } else if (data.status === "clarification_needed") {
-      // ✅ Use data.message (the backend sends "message", not "question")
-      setHistory((prev) => [
-        ...prev,
-        { role: "assistant", text: data.message || data.question || "Clarification needed" },
-      ]);
-    } else if (data.status === "chat" || data.status === "unsupported") {
-      setHistory((prev) => [
-        ...prev,
-        { role: "assistant", text: data.message, timestamp: timestamp() },
-      ]);
-    } else {
-      setHistory((prev) => [
-        ...prev,
-        { role: "assistant", text: `Error: ${data.message}` },
-      ]);
-    }
-  },
-  onError: (error) => {
-    setHistory((prev) => [
-      ...prev,
-      { role: "assistant", text: `Request failed: ${error.message}` },
-    ]);
-  },
-});
+    sendMessage.mutate(userMessage, {
+      onSuccess: (data) => {
+        if (data.status === "password_required") {
+          setPendingSecureAction({
+            tool: data.tool,
+            documentId: data.document_id,
+            pendingSteps: data.pending_steps ?? [],
+          });
+          return;
+        }
+        if (data.status === "success") {
+          setDocuments(data.documents);
+          syncWorkspaceUrl(data.documents);
+          setActiveDocId(data.documents[0]?.document_id ?? null);
+          setHistory((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              text: data.diff_summary,
+              documents: data.documents,
+            },
+          ]);
+        } else if (data.status === "clarification_needed") {
+          // ✅ Use data.message (the backend sends "message", not "question")
+          setHistory((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              text: data.message || data.question || "Clarification needed",
+            },
+          ]);
+        } else if (data.status === "chat" || data.status === "unsupported") {
+          setHistory((prev) => [
+            ...prev,
+            { role: "assistant", text: data.message, timestamp: timestamp() },
+          ]);
+        } else {
+          setHistory((prev) => [
+            ...prev,
+            { role: "assistant", text: `Error: ${data.message}` },
+          ]);
+        }
+      },
+      onError: (error) => {
+        setHistory((prev) => [
+          ...prev,
+          { role: "assistant", text: `Request failed: ${error.message}` },
+        ]);
+      },
+    });
   }
 
   function handleAddFiles(files: File[]) {
@@ -321,7 +324,11 @@ export default function WorkspaceContent() {
           isAdding={addDocuments.isPending}
         />
         <div className="relative flex-1 overflow-hidden bg-surface-secondary/40">
-          <PdfPreview doc={activeDoc} />
+          <PdfPreview
+            doc={activeDoc}
+            onAddFiles={handleAddFiles}
+            isAdding={addDocuments.isPending}
+          />
           <MobileChatSheet
             history={history}
             input={input}
@@ -350,7 +357,11 @@ export default function WorkspaceContent() {
             isAdding={addDocuments.isPending}
           />
           <div className="flex-1 overflow-hidden rounded-b-xl bg-surface-secondary/40">
-            <PdfPreview doc={activeDoc} />
+            <PdfPreview
+              doc={activeDoc}
+              onAddFiles={handleAddFiles}
+              isAdding={addDocuments.isPending}
+            />{" "}
           </div>
         </div>
 

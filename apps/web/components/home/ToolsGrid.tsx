@@ -22,7 +22,13 @@ import {
   Sparkles,
   PenLine,
   EyeOff,
-  Sparkle, Image, 
+  Sparkle,
+  Image,
+  Images,
+  FileArchive,
+  FileImage,
+  FilePlus2,
+  Layers,
   type LucideIcon,
 } from "lucide-react";
 
@@ -34,6 +40,10 @@ interface Tool {
   available: boolean;
 }
 
+// Keys here MUST match TOOL_REGISTRY names in workers/tools/registry.py
+// exactly — a mismatch silently falls back to the generic FileStack icon
+// (see getIcon below), which is easy to miss visually. Cross-check this
+// map against the registry any time a tool is renamed or added.
 const ICON_MAP: Record<string, LucideIcon> = {
   // Page tools
   delete_pages: Trash2,
@@ -43,43 +53,48 @@ const ICON_MAP: Record<string, LucideIcon> = {
   organize_pdf: FileStack,
   crop_pdf: Crop,
   add_page_numbers: Hash,
+  insert_blank_page: FilePlus2,
 
   // Document tools
   merge_pdfs: Merge,
-  compress_pdf: FileStack,
+  compress_pdf: Layers,
+  flatten_pdf: FileStack,
 
   // Security
   protect_pdf: Lock,
   unlock_pdf: Unlock,
   watermark_pdf: Stamp,
+  redact_pages: EyeOff,
 
-  // Convert
+  // Conversion — image out
   pdf_to_jpg: Image,
+  pdf_to_png: FileImage,
+  images_to_pdf: Images,
+
+  // Conversion — document formats
   pdf_to_pptx: Presentation,
-  pdf_to_word: FileText,
-  pdf_to_powerpoint: Presentation,
-  pdf_to_excel: FileSpreadsheet,
-  word_to_pdf: FileText,
+  pdf_to_docx: FileText,
+  pdf_to_xlsx: FileSpreadsheet,
+  docx_to_pdf: FileText,
 
-  // Extract
+  // Not registered as real tools yet (backend has no OCR/translate/
+  // summarize/sign entries in TOOL_REGISTRY today) — kept here so these
+  // render correctly once/if a "coming soon" placeholder list adds them
   ocr_pdf: ScanText,
-
-  // AI
   translate_pdf: Languages,
   summarize_pdf: Sparkles,
-
-  // Security (coming soon)
-  redact_pdf: EyeOff,
   sign_pdf: PenLine,
 };
+
+// Keys here MUST match the "category" field TOOL_REGISTRY actually uses:
+// "page" | "document" | "security" | "conversion" — NOT "convert"/"extract"/"ai".
 const CATEGORY_STYLES: Record<string, { bg: string; text: string }> = {
   page: { bg: "bg-blue-50", text: "text-blue-600" },
   document: { bg: "bg-violet-50", text: "text-violet-600" },
   security: { bg: "bg-rose-50", text: "text-rose-600" },
-  convert: { bg: "bg-amber-50", text: "text-amber-600" },
-  extract: { bg: "bg-emerald-50", text: "text-emerald-600" },
-  ai: { bg: "bg-fuchsia-50", text: "text-fuchsia-600" },  conversion: { bg: "bg-amber-50", text: "text-amber-600" },
-
+  conversion: { bg: "bg-amber-50", text: "text-amber-600" },
+  // kept as a fallback bucket for the not-yet-registered ai-ish tools above
+  ai: { bg: "bg-fuchsia-50", text: "text-fuchsia-600" },
 };
 
 function getIcon(name: string): LucideIcon {
@@ -107,7 +122,6 @@ export function ToolsGrid() {
 
   return (
     <section id="tools" className="py-16 lg:py-24">
-      {" "}
       <div className="mx-auto mb-4 flex w-fit items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50 px-3 py-1">
         <Sparkle className="h-3.5 w-3.5 text-blue-600" />
         <Text size="xs" weight="medium" className="text-blue-600">
@@ -134,10 +148,8 @@ export function ToolsGrid() {
         No menus to hunt through — just tell FlowPDF what you need done.
       </Text>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
- {isLoading &&
-  new Array(10).fill(null).map((_, i) => (
-    <ToolCardSkeleton key={i} />
-  ))}
+        {isLoading &&
+          new Array(10).fill(null).map((_, i) => <ToolCardSkeleton key={i} />)}
         {tools?.map((tool: Tool) => {
           const Icon = getIcon(tool.name);
           const style = getCategoryStyle(tool.category);

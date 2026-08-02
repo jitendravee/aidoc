@@ -6,6 +6,7 @@ import Text from "../ui/Text";
 import Button from "../ui/Button";
 import { CloudUpload, LockKeyhole, ShieldCheck, Zap } from "lucide-react";
 import Image from "next/image";
+import { ACCEPTED_UPLOAD_TYPES } from "@/lib/types/api";
 
 interface HeroProps {
   onFilesSelected: (files: File[]) => void;
@@ -84,7 +85,7 @@ export const Hero = ({ onFilesSelected, isUploading }: HeroProps) => {
           <input
             ref={fileInputRef}
             type="file"
-            accept=".pdf,.jpg,.jpeg,.png"
+  accept={ACCEPTED_UPLOAD_TYPES}
             multiple
             onChange={handleFileInputChange}
             className="hidden"

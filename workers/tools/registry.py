@@ -1,8 +1,8 @@
 import pikepdf
 from workers.tools import (
-    delete_pages, images_to_pdf, merge_pdfs, pdf_to_docx, pdf_to_jpg, pdf_to_png, pdf_to_pptx, protect_pdf, rotate_pages, split_pdf,
+    delete_pages, docx_to_pdf, flatten_pdf, images_to_pdf, merge_pdfs, pdf_to_docx, pdf_to_jpg, pdf_to_png, pdf_to_pptx, pdf_to_xlsx, protect_pdf, rotate_pages, split_pdf,
     unlock_pdf, watermark_pdf, extract_pages, organize_pdf, crop_pdf,
-    add_page_numbers, compress_pdf,
+    add_page_numbers, compress_pdf,insert_blank_page,redact_pages
 )
 
 TOOL_REGISTRY = {
@@ -32,7 +32,23 @@ TOOL_REGISTRY = {
         "category": "page",
         "output_count": 2,
         "params_schema": {"split_after_page": "int — page number to split after"},
-    },
+    },"redact_pages": {
+    "input_model": redact_pages.RedactPagesInput,
+    "run": redact_pages.run,
+    "description": "Permanently black out and remove specific rectangular areas of a document (e.g. sensitive text, SSNs, signatures) — not just a visual cover, the underlying content is deleted.",
+    "arity": "single",
+    "category": "page",
+    "output_count": 1,
+    "params_schema": {"boxes": "list of {page: int, x: float, y: float, width: float, height: float} — coordinates in points from the top-left of each page"},
+    "usage_notes": [
+        "If the user names what to redact (e.g. 'redact the SSN on page "
+        "2') but gives no coordinates, ask a clarifying question — you "
+        "cannot infer exact pixel/point coordinates from a text "
+        "description alone.",
+        "This is a PERMANENT, irreversible content removal, not a cosmetic "
+        "black box — mention this if the user seems to expect it to be undoable via undo_document beyond one step back.",
+    ],
+},
     "extract_pages": {
         "input_model": extract_pages.ExtractPagesInput,
         "run": extract_pages.run,
@@ -41,7 +57,38 @@ TOOL_REGISTRY = {
         "category": "page",
         "output_count": 1,
         "params_schema": {"pages": "list[int] — 1-indexed pages to extract, in the order to keep them"},
-    },
+    },"flatten_pdf": {
+    "input_model": flatten_pdf.FlattenPdfInput,
+    "run": flatten_pdf.run,
+    "description": "Flatten fillable form fields and annotations so the document can no longer be edited or filled in.",
+    "arity": "single",
+    "category": "document",
+    "output_count": 1,
+    "params_schema": {},
+    "usage_notes": [
+        "Different from protect_pdf — this removes editability of form "
+        "fields/annotations permanently and doesn't require a password; "
+        "protect_pdf adds a password lock instead. If the user says "
+        "'make this form uneditable' or 'flatten this', use this tool; "
+        "if they say 'password protect' or 'lock with a password', use protect_pdf.",
+    ],
+},
+    "pdf_to_xlsx": {
+    "input_model": pdf_to_xlsx.PdfToXlsxInput,
+    "run": pdf_to_xlsx.run,
+    "description": "Extract tables from a PDF into an Excel spreadsheet, one sheet per table found.",
+    "arity": "single",
+    "category": "conversion",
+    "output_count": 1,
+    "output_kind": "xlsx",
+    "output_format": "xlsx",
+    "params_schema": {},
+    "usage_notes": [
+        "Only works well on documents with clear tabular structure (bordered "
+        "or clearly-aligned tables) — for a PDF that's mostly prose text, "
+        "warn the user this may not extract anything useful before running it.",
+    ],
+},
     "organize_pdf": {
         "input_model": organize_pdf.OrganizePdfInput,
         "run": organize_pdf.run,
@@ -66,6 +113,31 @@ TOOL_REGISTRY = {
         "Prefer this over pdf_to_jpg when the user mentions PNG, "
         "transparency, or lossless/crisp output; otherwise pdf_to_jpg "
         "is the default for a generic 'convert to image' request.",
+    ],
+},"insert_blank_page": {
+    "input_model": insert_blank_page.InsertBlankPageInput,
+    "run": insert_blank_page.run,
+    "description": "Insert a blank page into a document at a specific position.",
+    "arity": "single",
+    "category": "page",
+    "output_count": 1,
+    "params_schema": {"after_page": "int — 1-indexed page to insert after; use 0 to insert at the very start"},
+    "usage_notes": [
+        "The new blank page matches the size of the document's existing pages.",
+    ],
+},
+"docx_to_pdf": {
+    "input_model": docx_to_pdf.DocxToPdfInput,
+    "run": docx_to_pdf.run,
+    "description": "Convert a Word document (.docx) into a PDF.",
+    "arity": "single",
+    "category": "conversion",
+    "output_count": 1,
+    "params_schema": {},
+    "usage_notes": [
+        "Formatting (fonts, images, layout) is preserved as closely as "
+        "the source document supports — complex embedded objects may "
+        "render slightly differently than in Word itself.",
     ],
 },
 "images_to_pdf": {

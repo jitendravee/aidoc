@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Text from "../../ui/Text";
 import { FileText, MoreHorizontal, Plus } from "lucide-react";
-import type { WorkspaceDocument } from "@/lib/types/api";
+import { ACCEPTED_UPLOAD_TYPES, type WorkspaceDocument } from "@/lib/types/api";
 
 interface MobileDocStripProps {
   activeDoc: WorkspaceDocument | undefined;
@@ -68,11 +68,11 @@ export default function MobileDocStrip({
           <label className="mt-1 flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-primary hover:bg-primary/5">
             <Plus className="size-3.5" />
             <Text size="xs" color="primary">
-              {isAdding ? "Adding…" : "Add PDF"}
+              {isAdding ? "Adding…" : "Add File"}
             </Text>
             <input
               type="file"
-              accept=".pdf,.jpg,.jpeg,.png"
+    accept={ACCEPTED_UPLOAD_TYPES}
               multiple
               className="hidden"
               onChange={(e) => {
