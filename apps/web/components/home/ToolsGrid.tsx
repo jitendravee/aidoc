@@ -1,6 +1,7 @@
 // components/home/ToolsGrid.tsx
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useTools } from "@/lib/hooks/useTools";
 import Text from "../ui/Text";
 import {
@@ -45,7 +46,6 @@ interface Tool {
 // (see getIcon below), which is easy to miss visually. Cross-check this
 // map against the registry any time a tool is renamed or added.
 const ICON_MAP: Record<string, LucideIcon> = {
-  // Page tools
   delete_pages: Trash2,
   rotate_pages: RotateCw,
   split_pdf: Scissors,
@@ -55,45 +55,35 @@ const ICON_MAP: Record<string, LucideIcon> = {
   add_page_numbers: Hash,
   insert_blank_page: FilePlus2,
 
-  // Document tools
   merge_pdfs: Merge,
   compress_pdf: Layers,
   flatten_pdf: FileStack,
 
-  // Security
   protect_pdf: Lock,
   unlock_pdf: Unlock,
   watermark_pdf: Stamp,
   redact_pages: EyeOff,
 
-  // Conversion — image out
   pdf_to_jpg: Image,
   pdf_to_png: FileImage,
   images_to_pdf: Images,
 
-  // Conversion — document formats
   pdf_to_pptx: Presentation,
   pdf_to_docx: FileText,
   pdf_to_xlsx: FileSpreadsheet,
   docx_to_pdf: FileText,
 
-  // Not registered as real tools yet (backend has no OCR/translate/
-  // summarize/sign entries in TOOL_REGISTRY today) — kept here so these
-  // render correctly once/if a "coming soon" placeholder list adds them
   ocr_pdf: ScanText,
   translate_pdf: Languages,
   summarize_pdf: Sparkles,
   sign_pdf: PenLine,
 };
 
-// Keys here MUST match the "category" field TOOL_REGISTRY actually uses:
-// "page" | "document" | "security" | "conversion" — NOT "convert"/"extract"/"ai".
 const CATEGORY_STYLES: Record<string, { bg: string; text: string }> = {
   page: { bg: "bg-blue-50", text: "text-blue-600" },
   document: { bg: "bg-violet-50", text: "text-violet-600" },
   security: { bg: "bg-rose-50", text: "text-rose-600" },
   conversion: { bg: "bg-amber-50", text: "text-amber-600" },
-  // kept as a fallback bucket for the not-yet-registered ai-ish tools above
   ai: { bg: "bg-fuchsia-50", text: "text-fuchsia-600" },
 };
 
@@ -118,7 +108,17 @@ function ToolCardSkeleton() {
 }
 
 export function ToolsGrid() {
+  const router = useRouter();
   const { data: tools, isLoading } = useTools();
+
+  function handleToolClick(tool: Tool) {
+    if (!tool.available) return;
+    // Carries intent into the workspace — no documents are uploaded yet
+    // at this point, so the workspace's own upload flow takes over from
+    // here; ?tool= is there for the workspace to optionally prefill the
+    // chat input (e.g. "Rotate pages") once a document lands.
+    router.push(`/workspace?tool=${encodeURIComponent(tool.name)}`);
+  }
 
   return (
     <section id="tools" className="py-16 lg:py-24">
@@ -155,12 +155,16 @@ export function ToolsGrid() {
           const style = getCategoryStyle(tool.category);
 
           return (
-            <div
+            <button
               key={tool.name}
-              className={`group relative flex flex-col rounded-2xl border p-5 transition-all ${
+              type="button"
+              onClick={() => handleToolClick(tool)}
+              disabled={!tool.available}
+              aria-disabled={!tool.available}
+              className={`group relative flex flex-col rounded-2xl border p-5 text-left transition-all ${
                 tool.available
-                  ? "border-gray-100 bg-white hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)]"
-                  : "border-gray-100 bg-gray-50/60"
+                  ? "cursor-pointer border-gray-100 bg-white hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                  : "cursor-not-allowed border-gray-100 bg-gray-50/60"
               }`}
             >
               {!tool.available && (
@@ -191,7 +195,7 @@ export function ToolsGrid() {
               >
                 {tool.description}
               </Text>
-            </div>
+            </button>
           );
         })}
       </div>
