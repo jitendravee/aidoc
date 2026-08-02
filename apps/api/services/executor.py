@@ -1,6 +1,6 @@
 import os
 import zipfile
-from apps.api.services.kinds import kind_extension
+from apps.api.services.kinds import format_extension
 from workers.tools.registry import TOOL_REGISTRY
 from workers.tools.base import ToolError
 from apps.api.services.workflow_validator import validate_workflow, get_output_keys
@@ -31,7 +31,11 @@ def execute_plan(plan: dict, doc_paths: dict[str, str], cache_dir: str) -> dict:
     if validation_error:
         return {"status": "error", "error": {"code": "INVALID_WORKFLOW", "message": validation_error}}
 
-    documents: dict[str, dict] = {label: {"paths": [path], "kind": "pdf"} for label, path in doc_paths.items()}
+    # Every document is a bundle: {"paths": [...], "kind": ..., "format": ...}.
+    # Originals are always PDFs today — wrapped once here.
+    documents: dict[str, dict] = {
+        label: {"paths": [path], "kind": "pdf", "format": "pdf"} for label, path in doc_paths.items()
+    }
     provenance: dict[str, set[str]] = {label: {label} for label in doc_paths}
     diff_summaries = []
 
@@ -45,7 +49,10 @@ def execute_plan(plan: dict, doc_paths: dict[str, str], cache_dir: str) -> dict:
         output_keys = get_output_keys(step)
         output_count = tool.get("output_count", 1)
         output_kind = tool.get("output_kind", "pdf")
-        ext = kind_extension(output_kind)
+        # tools without a distinct output_format (all the pdf-in/pdf-out
+        # tools) just fall back to their kind, which is "pdf" for them
+        output_format = tool.get("output_format", output_kind)
+        ext = format_extension(output_format)
 
         if output_count == "dynamic":
             step_dir = os.path.join(cache_dir, step["id"])
@@ -63,29 +70,30 @@ def execute_plan(plan: dict, doc_paths: dict[str, str], cache_dir: str) -> dict:
 
         result_paths = result["result"].get("output_paths") or [result["result"]["output_path"]]
 
-        if output_count != "dynamic" and len(result_paths) != len(output_keys): # type: ignore
+        if output_count != "dynamic" and len(result_paths) != len(output_keys):  # type: ignore
             return {
                 "status": "error",
                 "error": {
                     "code": "OUTPUT_MISMATCH",
-                    "message": f"Step '{step['id']}' produced {len(result_paths)} document(s) but declared {len(output_keys)}.", # type: ignore
+                    "message": f"Step '{step['id']}' produced {len(result_paths)} document(s) but declared {len(output_keys)}.",  # type: ignore
                 },
             }
 
-        # NEW: any tool with more than one output can opt into zipping —
+        # any tool with more than one output can opt into zipping —
         # collapses N result files into ONE .zip, which then flows through
         # every downstream branch (upload, doc creation, response shape)
-        # exactly like a normal single-file result. Zero special-casing
-        # needed anywhere past this point.
+        # exactly like a normal single-file result.
         final_kind = output_kind
+        final_format = output_format
         if len(result_paths) > 1 and tool.get("zip_outputs"):
             zip_path = os.path.join(cache_dir, f"{step['id']}_bundle.zip")
             result_paths = [_zip_paths(result_paths, zip_path)]
             final_kind = "zip"
+            final_format = "zip"
 
         combined_provenance = set().union(*(provenance.get(k, {k}) for k in step["inputs"]))
-        for key in output_keys: # type: ignore
-            documents[key] = {"paths": result_paths, "kind": final_kind}
+        for key in output_keys:  # type: ignore
+            documents[key] = {"paths": result_paths, "kind": final_kind, "format": final_format}
             provenance[key] = combined_provenance
 
         diff_summaries.append(result["result"]["diff_summary"])
@@ -95,12 +103,17 @@ def execute_plan(plan: dict, doc_paths: dict[str, str], cache_dir: str) -> dict:
     untouched = set(doc_paths) - consumed
 
     results = []
-    for out_key in final_outputs: # type: ignore
+    for out_key in final_outputs:  # type: ignore
         bundle = documents[out_key]
         labels = sorted(provenance.get(out_key, {out_key}) & set(doc_paths))
-        results.append({"labels": labels, "paths": bundle["paths"], "kind": bundle["kind"]})
+        results.append({"labels": labels, "paths": bundle["paths"], "kind": bundle["kind"], "format": bundle["format"]})
     for label in untouched:
-        results.append({"labels": [label], "paths": documents[label]["paths"], "kind": documents[label]["kind"]})
+        results.append({
+            "labels": [label],
+            "paths": documents[label]["paths"],
+            "kind": documents[label]["kind"],
+            "format": documents[label]["format"],
+        })
 
     keep_paths = {p for r in results for p in r["paths"]}
     original_paths = set(doc_paths.values())
@@ -118,8 +131,7 @@ def execute_plan(plan: dict, doc_paths: dict[str, str], cache_dir: str) -> dict:
     }
 
 
-# _validate_step and _run_tool are unchanged from what you already have — no edits needed there
-
+# _validate_step and _run_tool — unchanged, no edits needed
 def _validate_step(step: dict, documents: dict[str, dict]) -> str | None:
     tool_name = step.get("tool")
     if tool_name not in TOOL_REGISTRY:

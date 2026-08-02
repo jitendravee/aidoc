@@ -83,7 +83,6 @@ def _route(user_message: str, documents: list[dict], history: list[dict]) -> dic
 
 
 # ---------- Stage 2: detailed planner — only sees the tools the router picked ----------
-
 def _build_tools_description(tools: list[dict]) -> str:
     lines = []
     for t in tools:
@@ -93,7 +92,12 @@ def _build_tools_description(tools: list[dict]) -> str:
         )
         output_count = t.get("output_count", 1)
         if output_count == "dynamic":
-            output_note = " [produces a VARIABLE number of documents — one per page; you MUST use \"outputs\" with a single key representing the whole group, not one key per page]"
+            output_note = (
+                ' [produces a VARIABLE number of files, one per page. '
+                'Use the singular "output" field with ONE key name for '
+                'the whole group — e.g. "output": "converted_pages" — '
+                'NEVER a separate key per page and NEVER an "outputs" list for this tool]'
+            )
         elif output_count > 1:
             output_note = f" [produces {output_count} documents]"
         else:

@@ -4,7 +4,7 @@ import os, uuid, pikepdf
 
 from apps.api.ai.planner import plan
 from apps.api.services.executor import execute_plan
-from apps.api.services.kinds import kind_extension, kind_is_inline, kind_mime_type
+from apps.api.services.kinds import format_extension, format_mime_type, kind_extension, kind_is_inline, kind_mime_type
 from apps.api.services.pending_secure_actions import (
     create_pending_secure_action, pop_pending_secure_action,
 )
@@ -37,7 +37,6 @@ def _get_page_count(path: str, kind: str, password: str | None = None) -> int | 
     with _open_maybe_encrypted(path, password) as pdf:
         return len(pdf.pages)
 
-
 def _build_response_documents(
     result: dict,
     doc_paths: dict[str, str],
@@ -50,6 +49,7 @@ def _build_response_documents(
         labels = entry["labels"]
         paths = entry["paths"]
         kind = entry["kind"]
+        fmt = entry["format"]
         group_id = str(uuid.uuid4()) if len(paths) > 1 else None
         group_total = len(paths) if len(paths) > 1 else None
 
@@ -74,7 +74,7 @@ def _build_response_documents(
 
         for i, local_path in enumerate(paths, start=1):
             page_count = _get_page_count(local_path, kind, password)
-            ext = kind_extension(kind)
+            ext = format_extension(fmt)
 
             if kind == "pdf" and len(paths) == 1 and len(labels) == 1:
                 target_doc_id = label_to_doc_id[labels[0]]
@@ -101,7 +101,7 @@ def _build_response_documents(
                 "filename": filename,
                 "download_url": get_presigned_download_url(
                     new_storage_key,
-                    mime_type=kind_mime_type(kind),
+                    mime_type=format_mime_type(fmt),
                     inline=kind_is_inline(kind),
                 ),
                 "kind": kind,

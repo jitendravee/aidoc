@@ -157,7 +157,7 @@ export default async function BlogPostPage({ params }: PageProps) {
             <Text size="xs" color="text-secondary">No sign-up, nothing to install.</Text>
           </div>
           <Link href="/">
-            <Button size="sm">{post.ctaText}</Button>
+            <Button size="sm">{'Try Now'}</Button>
           </Link>
         </div>
 

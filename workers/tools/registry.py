@@ -1,6 +1,6 @@
 import pikepdf
 from workers.tools import (
-    delete_pages, merge_pdfs, pdf_to_jpg, pdf_to_pptx, protect_pdf, rotate_pages, split_pdf,
+    delete_pages, merge_pdfs, pdf_to_docx, pdf_to_jpg, pdf_to_png, pdf_to_pptx, protect_pdf, rotate_pages, split_pdf,
     unlock_pdf, watermark_pdf, extract_pages, organize_pdf, crop_pdf,
     add_page_numbers, compress_pdf,
 )
@@ -51,28 +51,67 @@ TOOL_REGISTRY = {
         "output_count": 1,
         "params_schema": {"new_order": "list[int] — every original page number exactly once, in the new order"},
     },
-"pdf_to_jpg": {
-    "input_model": pdf_to_jpg.PdfToJpgInput,
-    "run": pdf_to_jpg.run,
-    "description": "Convert every page of a PDF into a separate JPG image.",
+"pdf_to_png": {
+    "input_model": pdf_to_png.PdfToPngInput,
+    "run": pdf_to_png.run,
+    "description": "Convert every page of a PDF into a separate PNG image.",
     "arity": "single",
     "category": "conversion",
     "output_count": "dynamic",
     "output_kind": "image",
-    "zip_outputs": True,   # NEW — bundle N images into one .zip instead of N documents
+    "output_format": "png",
+    "zip_outputs": True,   # ADD THIS — same storage control as pdf_to_jpg
     "params_schema": {"dpi": "int, default 150 — image resolution"},
+    "usage_notes": [
+        "Prefer this over pdf_to_jpg when the user mentions PNG, "
+        "transparency, or lossless/crisp output; otherwise pdf_to_jpg "
+        "is the default for a generic 'convert to image' request.",
+    ],
 },
-"pdf_to_pptx": {
-    "input_model": pdf_to_pptx.PdfToPptxInput,
-    "run": pdf_to_pptx.run,
-    "description": "Convert a PDF into a PowerPoint presentation, one slide per page.",
+# registry.py entry
+"pdf_to_docx": {
+    "input_model": pdf_to_docx.PdfToDocxInput,
+    "run": pdf_to_docx.run,
+    "description": "Convert a PDF into an editable Word document, preserving text, layout, and basic formatting.",
     "arity": "single",
     "category": "conversion",
     "output_count": 1,
-    "output_kind": "pptx",
-    "params_schema": {"dpi": "int, default 150 — image resolution per slide"},
-    "usage_notes": ["Slides are image-based, not editable text — mention this if the user expects editable content."],
+    "output_kind": "docx",
+    "output_format": "docx",
+    "params_schema": {},
+    "usage_notes": [
+        "Unlike pdf_to_pptx, this attempts to extract REAL editable text and "
+        "layout, not just images — mention this as an advantage if the user "
+        "is comparing the two.",
+        "Complex layouts (heavy tables, multi-column, scanned/image-only "
+        "pages) may not convert perfectly — say so if the source looks "
+        "image-heavy rather than promising a flawless result.",
+    ],
 },
+    "pdf_to_jpg": {
+        "input_model": pdf_to_jpg.PdfToJpgInput,
+        "run": pdf_to_jpg.run,
+        "description": "Convert every page of a PDF into a separate JPG image.",
+        "arity": "single",
+        "category": "conversion",
+        "output_count": "dynamic",
+        "output_kind": "image",
+        "output_format": "jpg",       # NEW
+        "zip_outputs": True,
+        "params_schema": {"dpi": "int, default 150 — image resolution"},
+    },
+    "pdf_to_pptx": {
+        "input_model": pdf_to_pptx.PdfToPptxInput,
+        "run": pdf_to_pptx.run,
+        "description": "Convert a PDF into a PowerPoint presentation, one slide per page.",
+        "arity": "single",
+        "category": "conversion",
+        "output_count": 1,
+        "output_kind": "pptx",
+        "output_format": "pptx",      # NEW
+        "params_schema": {"dpi": "int, default 150 — image resolution per slide"},
+        "usage_notes": ["Slides are image-based, not editable text — mention this if the user expects editable content."],
+    },
 # workers/tools/registry.py — just the crop_pdf entry shown, add usage_notes similarly to any tool that needs it
     "crop_pdf": {
         "input_model": crop_pdf.CropPdfInput,
