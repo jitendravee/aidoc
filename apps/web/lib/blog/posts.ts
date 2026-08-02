@@ -340,6 +340,409 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
   },
   {
+    slug: "convert-images-to-pdf-free",
+    title: "How to Convert JPG or PNG Images to a PDF for Free",
+    description:
+      "Combine one or dozens of photos into a single PDF, in the right order — no software, no account, and no limit on how many images you upload at once.",
+    publishedAt: "2026-08-03",
+    updatedAt: "2026-08-03",
+    readingTime: "5 min read",
+    ctaText: "Convert your images to PDF now",
+    sections: [
+      {
+        heading: "Why turn images into a PDF at all",
+        paragraphs: [
+          "A phone camera or scanner app produces individual JPG or PNG files, one per photo. That's fine for a single image, but the moment you have more than one — a stack of receipts, a set of scanned contract pages, screenshots for a report — emailing or filing them separately gets messy fast. A single PDF keeps every page in one file, in the order you intended, and opens the same way on any device without anyone needing to click through a folder of loose images.",
+        ],
+      },
+      {
+        heading: "Order matters more than people expect",
+        paragraphs: [
+          "The single biggest thing to get right is sequence. Most tools convert images into PDF pages in the exact order you upload or select them, so if you're combining twelve scanned pages, they need to be added in reading order, not alphabetical or file-date order — those rarely match, especially with camera-generated filenames like IMG_2041.jpg.",
+          "If your files are already named in order (page_01.jpg, page_02.jpg, and so on), most tools handle that automatically. If they're not, it's worth a few seconds to rename or reorder before converting, since fixing page order after the PDF is built usually means starting over.",
+        ],
+      },
+      {
+        heading: "How to convert images to PDF online for free",
+        paragraphs: ["The typical process across free tools:"],
+        list: [
+          "Upload the images you want to combine, in the order they should appear.",
+          "Check the preview order and fix it if the tool got it wrong.",
+          "Run the conversion — each image becomes one page in a single PDF.",
+          "Download the combined file.",
+        ],
+      },
+      {
+        heading: "Convert a whole batch by just asking",
+        paragraphs: [
+          'FlowPDF handles this the same way as everything else — upload your images and type "combine these into a PDF." There\'s no limit forcing you to convert one at a time either: drop in a hundred photos at once and they\'re bundled and converted together, not uploaded one by one.',
+        ],
+      },
+      {
+        heading: "One image is still a valid use case",
+        paragraphs: [
+          "This isn't just a batch tool. Converting a single photo — a signed page, a whiteboard photo, a receipt — into a one-page PDF is just as common a request, usually because a form or an email attachment field only accepts PDF, not JPG. A single image works exactly the same way as a batch of a hundred; it just produces a one-page file instead of a longer one.",
+        ],
+      },
+      {
+        heading: "Common mistakes",
+        paragraphs: [
+          "A few things trip people up here.",
+        ],
+        list: [
+          "Uploading images at wildly different resolutions — the PDF will still work, but page sizes can look inconsistent if you flip through it",
+          "Mixing portrait and landscape photos without checking the result — rotate any sideways images before converting rather than after",
+          "Assuming file order equals upload order — always check the preview before running the conversion, especially with large batches",
+        ],
+      },
+      {
+        heading: "Related PDF tasks",
+        paragraphs: [
+          "If you need to go the other direction — pulling pages out of an existing PDF as standalone images — converting to JPG covers that. And once your images are combined into one PDF, adding page numbers or a watermark is often the next step before sending it out.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "convert-pdf-to-png-free",
+    title: "How to Convert a PDF to PNG for Free",
+    description:
+      "Turn PDF pages into PNG images when you need transparency or lossless quality — for design work, presentations, or web graphics. Here's how, and when PNG beats JPG.",
+    publishedAt: "2026-08-03",
+    updatedAt: "2026-08-03",
+    readingTime: "4 min read",
+    ctaText: "Convert your PDF to PNG now",
+    sections: [
+      {
+        heading: "PNG vs JPG — when it actually matters",
+        paragraphs: [
+          "Most of the time, converting a PDF page to an image, JPG is the simpler default — smaller files, universally supported. PNG earns its place in a specific set of cases: when the page needs a transparent background, when it's going into design software that will be layered over other graphics, or when the content is mostly sharp lines, text, or vector-style graphics rather than a photo, where PNG's lossless compression keeps edges crisp instead of introducing the soft blur JPG compression can leave around text.",
+          "If you're not sure which you need, a simple rule covers most cases: photos and scanned documents are usually fine as JPG; logos, diagrams, screenshots, and anything going into a design tool are usually better as PNG.",
+        ],
+      },
+      {
+        heading: "How to convert a PDF to PNG online for free",
+        paragraphs: ["The general steps most tools follow:"],
+        list: [
+          "Upload the PDF.",
+          "Choose PNG rather than JPG as the output format, if the tool offers a choice.",
+          "Run the conversion — each page becomes a separate PNG file, usually delivered as a ZIP for multi-page documents.",
+          "Download and check that the resolution is high enough for your intended use.",
+        ],
+      },
+      {
+        heading: "Convert with a simple request",
+        paragraphs: [
+          'With FlowPDF, upload the PDF and type "convert this to PNG" — if you specifically need PNG for transparency or crisp lines rather than a generic image export, say so and it\'ll use PNG instead of defaulting to JPG. You can also ask for just one page, like "convert page 2 to PNG," if you don\'t need the whole document.',
+        ],
+      },
+      {
+        heading: "A note on file size",
+        paragraphs: [
+          "PNG files are typically larger than JPG for the same page, sometimes considerably so for image-heavy pages, because PNG doesn't throw away data the way JPG's lossy compression does. That's the tradeoff for the sharper, lossless result — worth knowing before converting a hundred-page document to PNG if file size or upload limits are a concern.",
+        ],
+      },
+      {
+        heading: "Related PDF tasks",
+        paragraphs: [
+          "If PNG's larger file size becomes a problem, JPG conversion is the lighter-weight option for the same pages. And if you're building a PDF from images rather than extracting images from a PDF, converting images to PDF covers the reverse direction.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "convert-pdf-to-word-free",
+    title: "How to Convert a PDF to an Editable Word Document for Free",
+    description:
+      "Turn a PDF back into a real, editable .docx file — with actual text and layout, not just an image. Here's how, and where the conversion can fall short.",
+    publishedAt: "2026-08-03",
+    updatedAt: "2026-08-03",
+    readingTime: "6 min read",
+    ctaText: "Convert your PDF to Word now",
+    sections: [
+      {
+        heading: "Why this conversion is different from turning a PDF into images",
+        paragraphs: [
+          "Converting a PDF to JPG or PowerPoint produces an image of each page — you can look at it, but you can't click into the text and edit it. Converting to Word is a different job entirely: the goal is to reconstruct actual, selectable, editable text and layout, so you can open the result in Microsoft Word and keep working on it like it was never a PDF in the first place.",
+          "This matters most when the original source file — the Word doc a contract or report was written in — is gone or was never yours to begin with, and you need to make changes to a PDF someone sent you rather than starting from scratch.",
+        ],
+      },
+      {
+        heading: "What converts cleanly and what doesn't",
+        paragraphs: [
+          "Text-heavy documents with straightforward layouts — reports, letters, single-column contracts — convert the most reliably, since there's little ambiguity about how the text should flow. Where it gets harder is anything with a complex layout: multi-column pages, dense tables, text wrapped tightly around images, or PDFs that started life as scanned pages rather than digitally created text.",
+          "A scanned PDF is worth calling out specifically — if the 'text' in the PDF is actually a photo of text rather than real character data, converting to Word won't produce editable text at all unless the tool runs OCR first to recognize the characters in the image.",
+        ],
+      },
+      {
+        heading: "How to convert a PDF to Word online for free",
+        paragraphs: ["The typical process:"],
+        list: [
+          "Upload the PDF.",
+          "Run the conversion.",
+          "Download the .docx file and open it in Word (or Google Docs) to check the formatting.",
+          "Fix any layout issues by hand — tables and multi-column sections are the most likely spots to need a touch-up.",
+        ],
+      },
+      {
+        heading: "Convert by just asking",
+        paragraphs: [
+          'FlowPDF handles this like everything else — upload the PDF and type "convert this to Word" or "convert this to an editable document." You get back a real .docx file with actual text, not a picture of the page.',
+        ],
+      },
+      {
+        heading: "Setting expectations",
+        paragraphs: [
+          "It's worth being direct here: PDF-to-Word conversion is reconstruction, not magic. For a clean, mostly-text document, the result is usually very close to the original and needs little or no cleanup. For a PDF with a dense table, a multi-column academic layout, or scanned image-only pages, expect to spend a few minutes fixing formatting after the conversion rather than getting a perfect match on the first try.",
+        ],
+      },
+      {
+        heading: "Related PDF tasks",
+        paragraphs: [
+          "If you need to go the other direction after editing — turning your finished Word document back into a PDF — converting Word to PDF covers that. And if the source PDF is a scan rather than digital text, that's usually the root cause of a messy conversion, worth checking before assuming the tool did something wrong.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "convert-word-to-pdf-free",
+    title: "How to Convert a Word Document to PDF for Free",
+    description:
+      "Turn a .docx file into a PDF that looks identical on every device — for sending, printing, or archiving. Here's how, and why PDF is usually the safer format to share.",
+    publishedAt: "2026-08-03",
+    updatedAt: "2026-08-03",
+    readingTime: "4 min read",
+    ctaText: "Convert your Word doc to PDF now",
+    sections: [
+      {
+        heading: "Why send a PDF instead of the Word file itself",
+        paragraphs: [
+          "A Word document can look different depending on what opens it — fonts substitute, page breaks shift, and formatting that looked right on your machine sometimes doesn't survive the trip to someone else's. A PDF locks the layout in place. Whoever opens it — on a phone, a different operating system, an old version of Word or none at all — sees exactly what you intended, page for page.",
+          "It's also the safer default anytime you don't want the recipient editing the document directly, since a PDF isn't meant to be modified the way a .docx file is.",
+        ],
+      },
+      {
+        heading: "How to convert Word to PDF online for free",
+        paragraphs: ["The typical process:"],
+        list: [
+          "Upload the .docx file.",
+          "Run the conversion.",
+          "Download the PDF and open it to confirm the formatting, fonts, and page breaks came through as expected.",
+        ],
+      },
+      {
+        heading: "Convert by just asking",
+        paragraphs: [
+          'With FlowPDF, upload the Word document and type "convert this to PDF." No export menu to find, no printer-driver workaround — the file comes back as a properly formatted PDF.',
+        ],
+      },
+      {
+        heading: "What to check after converting",
+        paragraphs: [
+          "Most conversions come through cleanly, but it's worth a quick check on a few things before sending the file onward: embedded images look sharp rather than pixelated, page breaks land where you expect, and any headers, footers, or page numbers carried over correctly. These are the spots most likely to shift slightly during conversion.",
+        ],
+      },
+      {
+        heading: "Related PDF tasks",
+        paragraphs: [
+          "If you need to make further changes after converting — add page numbers, apply a watermark, or password protect the file before sending — those are quick follow-up steps once the PDF version exists. And if you ever need to go back the other way, converting a PDF to Word covers that direction too.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "convert-pdf-to-excel-free",
+    title: "How to Convert a PDF to Excel for Free",
+    description:
+      "Pull tables out of a PDF and into a real, editable spreadsheet — for invoices, financial statements, or reports full of tabular data.",
+    publishedAt: "2026-08-03",
+    updatedAt: "2026-08-03",
+    readingTime: "5 min read",
+    ctaText: "Convert your PDF to Excel now",
+    sections: [
+      {
+        heading: "What this tool is actually good for",
+        paragraphs: [
+          "Converting a PDF to Excel is specifically about extracting tables — rows and columns of data — into a real spreadsheet you can sort, filter, and calculate on. It's not a general-purpose PDF-to-spreadsheet converter for any document; it's built for PDFs that already contain structured, tabular data: invoices, financial statements, price lists, data-heavy reports.",
+          "If a PDF is mostly prose with no tables at all, this conversion has nothing to extract and isn't the right tool. It shines specifically when someone has sent you a PDF version of what used to be a spreadsheet, and you need the numbers back in a format you can actually work with.",
+        ],
+      },
+      {
+        heading: "Why table extraction is harder than it looks",
+        paragraphs: [
+          "A PDF doesn't actually store 'tables' the way a spreadsheet does — it stores text positioned at specific coordinates on a page. A conversion tool has to infer, from that positioning, which text belongs in which row and column. This works well when a table has clear borders or consistent alignment, and works less well when a table has merged cells, inconsistent spacing, or is really just text loosely arranged to look tabular.",
+        ],
+      },
+      {
+        heading: "How to convert a PDF to Excel online for free",
+        paragraphs: ["The typical process:"],
+        list: [
+          "Upload the PDF.",
+          "Run the conversion — the tool scans every page for table-like structures.",
+          "Download the resulting .xlsx file, with each detected table usually placed on its own sheet.",
+          "Check the data against the original PDF, especially the first and last rows of each table, where extraction is most likely to slip.",
+        ],
+      },
+      {
+        heading: "Convert by just asking",
+        paragraphs: [
+          'FlowPDF handles this the same way — upload the PDF and type "convert this to Excel" or "pull the tables out of this into a spreadsheet." You get back an .xlsx file with a sheet for each table it found.',
+        ],
+      },
+      {
+        heading: "If no tables are found",
+        paragraphs: [
+          "If the PDF doesn't contain anything the tool recognizes as a table, the conversion won't produce a useful result, and it's worth checking whether the document is actually image-heavy or scanned rather than clearly tabular before trying again. A document that's mostly narrative text with the occasional number isn't a good candidate for this conversion.",
+        ],
+      },
+      {
+        heading: "Related PDF tasks",
+        paragraphs: [
+          "If the PDF has both tables and long sections of prose you also need editable, converting to Word is usually the better fit for the non-tabular parts. And if you only need specific pages containing the tables rather than the whole document, extracting those pages first can make the conversion faster and more accurate.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "redact-pdf-online-free",
+    title: "How to Redact Sensitive Information From a PDF for Free",
+    description:
+      "Permanently remove — not just cover up — sensitive text like SSNs, account numbers, or names from a PDF before sharing it.",
+    publishedAt: "2026-08-03",
+    updatedAt: "2026-08-03",
+    readingTime: "6 min read",
+    ctaText: "Redact your PDF now",
+    sections: [
+      {
+        heading: "Redaction is not the same as drawing a black box",
+        paragraphs: [
+          "This is the single most important thing to understand before redacting anything: a black rectangle drawn over text in a PDF editor usually just sits on top of the content — the underlying text is still in the file, and it's trivially recoverable by selecting and copying it, or sometimes just by opening the PDF in a different viewer. This has caused real, public data leaks, including sensitive government and legal documents where a 'redacted' PDF still had the original text underneath a visual cover.",
+          "Real redaction means permanently deleting the underlying content in that region, not just hiding it visually. If a tool doesn't explicitly say it removes the content rather than covering it, assume it doesn't, and don't trust it with anything genuinely sensitive.",
+        ],
+      },
+      {
+        heading: "What gets redacted, in practice",
+        paragraphs: [
+          "Common cases: a Social Security number on a tax document being shared with a third party, an account number on a bank statement being submitted as evidence, a name or address on a document being made public, or a signature that shouldn't appear on a shared copy. In every case, the goal is the same — the sensitive detail should be genuinely gone from the file that leaves your hands, not just visually obscured.",
+        ],
+      },
+      {
+        heading: "How to redact a PDF online for free",
+        paragraphs: ["The general process:"],
+        list: [
+          "Upload the PDF.",
+          "Mark the exact area (or areas) that need to be redacted — usually by drawing a box over the sensitive text on each page.",
+          "Run the redaction — a real redaction tool removes the underlying content in that region, not just paints over it.",
+          "Download the result and confirm the sensitive text is actually gone, not just hidden, by trying to select or search for it in the output file.",
+        ],
+      },
+      {
+        heading: "Redacting with FlowPDF",
+        paragraphs: [
+          "Redaction needs precise coordinates — telling the tool exactly where on the page the sensitive content sits — so this is one case where it helps to be specific rather than just describing what to remove in general terms. Say which page and roughly where on it (for example, 'redact the account number in the top right of page 1'), and FlowPDF applies a permanent redaction that removes the underlying content rather than covering it.",
+        ],
+      },
+      {
+        heading: "Double-check before you share",
+        paragraphs: [
+          "After redacting, it's worth a quick sanity check on the output file: try to search for the redacted text (Ctrl+F or Cmd+F) and confirm it doesn't turn up, and try selecting the black box itself to confirm there's no text underneath it. If either of those surfaces the original content, the redaction wasn't done properly and the file shouldn't be shared as-is.",
+        ],
+      },
+      {
+        heading: "Related PDF tasks",
+        paragraphs: [
+          "If the goal is preventing unauthorized access to the whole document rather than removing specific details, password protecting the PDF solves a different problem and is worth doing alongside redaction, not instead of it. And if you're removing content that spans entire pages rather than small sections, deleting pages outright is simpler than redacting each one individually.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "insert-blank-page-pdf",
+    title: "How to Insert a Blank Page Into a PDF for Free",
+    description:
+      "Add an empty page anywhere in a PDF — for notes, dividers, or print layout — without disturbing the rest of the document.",
+    publishedAt: "2026-08-03",
+    updatedAt: "2026-08-03",
+    readingTime: "3 min read",
+    ctaText: "Insert a blank page now",
+    sections: [
+      {
+        heading: "Why you'd add a blank page on purpose",
+        paragraphs: [
+          "This comes up more than it seems like it should. Double-sided printing sometimes needs a blank page inserted so a new section starts on the correct side of the sheet. A form might need a spot left open for handwritten notes once it's printed. A document assembled from multiple sources might need a clear divider page between sections. In each case, the fix is small: one empty page, inserted at a specific point, with everything else in the document left untouched.",
+        ],
+      },
+      {
+        heading: "How to insert a blank page online for free",
+        paragraphs: ["The typical process:"],
+        list: [
+          "Upload the PDF.",
+          "Choose the exact position — after which existing page the blank page should be inserted.",
+          "Run the tool and download the updated file.",
+          "Check that the blank page landed in the right spot and that the rest of the page order is unchanged.",
+        ],
+      },
+      {
+        heading: "Insert a blank page by just asking",
+        paragraphs: [
+          'With FlowPDF, upload the PDF and type "insert a blank page after page 4" or "add a blank page at the start." The new page matches the size of the rest of the document, and everything else stays exactly where it was.',
+        ],
+      },
+      {
+        heading: "Related PDF tasks",
+        paragraphs: [
+          "If you're adding a page with actual content rather than a blank one, merging that page in from a separate PDF is the way to do it. And if the opposite problem comes up — an unwanted blank page already in the document — deleting pages removes it just as easily.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "view-pdf-online-free",
+    title: "How to View a PDF Online Without Downloading Any Software",
+    description:
+      "Open and read a PDF, image, or Word document straight in your browser — no upload, no account, and nothing installed on your computer.",
+    publishedAt: "2026-08-03",
+    updatedAt: "2026-08-03",
+    readingTime: "3 min read",
+    ctaText: "Open the free online viewer",
+    sections: [
+      {
+        heading: "You don't need a PDF reader installed anymore",
+        paragraphs: [
+          "For a long time, opening a PDF meant having a dedicated reader installed — Adobe Reader being the default most people grew up with. Modern browsers can render PDFs natively, which means a browser-based viewer can open a file instantly with no software installation and, in many cases, no upload to a server at all. The file loads directly from your device into the browser tab.",
+        ],
+      },
+      {
+        heading: "What actually happens when you 'view' a file online",
+        paragraphs: [
+          "For a PDF or an image (JPG, PNG), a good browser-based viewer never needs to send the file anywhere — it reads the file locally and displays it right in the page. That's meaningfully different from an editing tool, which generally does need to upload the file to actually perform changes and send back a result. If all you need to do is look at a document, there's no reason it should leave your device at all.",
+          "Word, PowerPoint, and Excel files are the exception — no browser can render those formats natively, so viewing one of those does require converting it to something a browser can display, usually a PDF, which does mean a brief upload for that conversion step.",
+        ],
+      },
+      {
+        heading: "How to view a PDF online for free",
+        paragraphs: ["With a browser-based viewer, the process is just:"],
+        list: [
+          "Open the viewer page.",
+          "Choose or drop in the file.",
+          "It opens immediately — for PDFs and images, right in the browser with no wait.",
+        ],
+      },
+      {
+        heading: "Viewing with FlowPDF",
+        paragraphs: [
+          "FlowPDF's viewer works exactly this way: drop in a PDF or image and it opens instantly, nothing is uploaded unless you decide to edit it. If you do need to make a change — rotate a page, add a watermark, merge it with something else — there's a direct path from the viewer into the same AI-driven editor, so you're not switching tools halfway through.",
+        ],
+      },
+      {
+        heading: "Related PDF tasks",
+        paragraphs: [
+          "Viewing is often just the first step before an actual edit. If you spot a sideways page while reading, rotating it takes a few seconds. And if the document needs to be shared afterward, compressing it first keeps the file size manageable for email.",
+        ],
+      },
+    ],
+  },
+  {
     slug: "add-page-numbers-to-pdf",
     title: "How to Add Page Numbers to a PDF for Free",
     description:

@@ -1,8 +1,10 @@
 // app/page.tsx
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Eye } from "lucide-react";
 import { Hero } from "@/components/home/hero";
 import { ToolsGrid } from "@/components/home/ToolsGrid";
 
@@ -11,6 +13,8 @@ import { FAQ } from "@/components/home/FAQ";
 import { useUploadMultipleDocuments } from "@/lib/hooks/useUploadMultipleDocuments";
 import { completeUpload } from "@/lib/api/documents";
 import PasswordModal from "@/components/workspace/PasswordModal";
+import Text from "@/components/ui/Text";
+import { ViewerSection } from "@/components/home/ViewerSection";
 
 interface PendingUploadPassword {
   uploadToken: string;
@@ -95,6 +99,7 @@ export default function Page() {
               priceCurrency: "USD",
             },
             featureList: [
+              "View PDFs and documents online",
               "Rotate PDF pages",
               "Delete PDF pages",
               "Merge multiple PDFs",
@@ -122,8 +127,23 @@ export default function Page() {
       <main className="w-full">
         <div className="max-w-360 mx-auto px-4 md:px-8 xl:px-30 py-6 lg:py-8 ">
           <Hero onFilesSelected={handleFilesSelected} isUploading={uploadDocuments.isPending} />
+
+          <div className="mx-auto -mt-4 mb-4 flex justify-center">
+            <Link
+              href="/viewer"
+              className="flex items-center gap-1.5 text-sm text-text-secondary transition-colors hover:text-primary"
+            >
+              <Eye className="size-4" />
+              <Text size="sm" color="text-secondary" className="hover:text-primary">
+                Just want to view a file?
+              </Text>
+            </Link>
+          </div>
+
           <HowItWorks />
           <ToolsGrid />
+          <ViewerSection />
+
           <FAQ />
         </div>
       </main>
