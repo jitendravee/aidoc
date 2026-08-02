@@ -1,4 +1,3 @@
-// lib/config/documentKinds.tsx
 import type { ComponentType } from "react";
 import {
   FileText,
@@ -6,6 +5,7 @@ import {
   Presentation,
   FileSpreadsheet,
   FileType2,
+  Archive,
 } from "lucide-react";
 import type { DocumentKind, WorkspaceDocument } from "@/lib/types/api";
 import PdfViewer from "@/components/workspace/previews/PdfViewer";
@@ -22,12 +22,8 @@ interface DocumentKindConfig {
 export const DOCUMENT_KIND_CONFIG: Record<DocumentKind, DocumentKindConfig> = {
   pdf: { label: "PDF", icon: FileText, Preview: PdfViewer },
   image: { label: "Image", icon: ImageIcon, Preview: ImageViewer },
-  pptx: {
-    label: "PowerPoint",
-    icon: Presentation,
-    Preview: UnsupportedPreview,
-  },
+  pptx: { label: "PowerPoint", icon: Presentation, Preview: UnsupportedPreview },
   docx: { label: "Word", icon: FileType2, Preview: UnsupportedPreview },
   xlsx: { label: "Excel", icon: FileSpreadsheet, Preview: UnsupportedPreview },
-  zip: { label: "Zip", icon: FileSpreadsheet, Preview: UnsupportedPreview },
+  zip: { label: "Zip Archive", icon: Archive, Preview: UnsupportedPreview },
 };

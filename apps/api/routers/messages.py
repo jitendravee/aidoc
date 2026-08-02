@@ -4,7 +4,7 @@ import os, uuid, pikepdf
 
 from apps.api.ai.planner import plan
 from apps.api.services.executor import execute_plan
-from apps.api.services.kinds import format_extension, format_mime_type, kind_extension, kind_is_inline, kind_mime_type
+from apps.api.services.kinds import format_extension, format_from_filename, format_kind, format_mime_type, kind_extension, kind_is_inline, kind_mime_type
 from apps.api.services.pending_secure_actions import (
     create_pending_secure_action, pop_pending_secure_action,
 )
@@ -54,24 +54,24 @@ def _build_response_documents(
         group_total = len(paths) if len(paths) > 1 else None
 
         # unchanged original: same file, no new version was written
-        if kind == "pdf" and len(paths) == 1 and len(labels) == 1 and paths[0] == doc_paths[labels[0]]:
+        if len(paths) == 1 and len(labels) == 1 and paths[0] == doc_paths[labels[0]]:
             target_doc_id = label_to_doc_id[labels[0]]
             head = get_head_version(target_doc_id)
+            resp_fmt = format_from_filename(head["storage_key"]) or "pdf"
             response_documents.append({
                 "document_id": target_doc_id,
                 "filename": get_document_filename(target_doc_id),
                 "download_url": get_presigned_download_url(
                     head["storage_key"],
-                    mime_type=kind_mime_type("pdf"),
-                    inline=True,
+                    mime_type=format_mime_type(resp_fmt),
+                    inline=kind_is_inline(format_kind(resp_fmt)),
                 ),
-                "kind": "pdf",
+                "kind": format_kind(resp_fmt),
                 "page_count": head["page_count"],
                 "can_undo": head["parent_version_id"] is not None,
                 "group_id": None, "group_index": None, "group_total": None,
             })
             continue
-
         for i, local_path in enumerate(paths, start=1):
             page_count = _get_page_count(local_path, kind, password)
             ext = format_extension(fmt)
@@ -148,7 +148,11 @@ async def send_message(body: SendMessageRequest):
         label_to_doc_id[label] = doc_id
         head = get_head_version(doc_id)
         doc_meta[label] = head
-        documents_for_planner.append({"label": label, "page_count": head["page_count"]})
+        documents_for_planner.append({
+            "label": label,
+            "page_count": head["page_count"],
+            "kind": format_kind(format_from_filename(head["storage_key"]) or "pdf"),
+        })
 
     result_plan = plan(body.message, documents_for_planner, history=history)
 
@@ -182,12 +186,16 @@ async def send_message(body: SendMessageRequest):
         }
 
     doc_paths = {}
+    doc_formats = {}
     for label, head in doc_meta.items():
-        path = os.path.join(CACHE_DIR, f"{label}_{uuid.uuid4().hex}.pdf")
+        fmt = format_from_filename(head["storage_key"]) or "pdf"
+        ext = format_extension(fmt)
+        path = os.path.join(CACHE_DIR, f"{label}_{uuid.uuid4().hex}{ext}")
         download_file(head["storage_key"], path)
         doc_paths[label] = path
+        doc_formats[label] = fmt
 
-    result = execute_plan(result_plan, doc_paths, CACHE_DIR)
+    result = execute_plan(result_plan, doc_paths, CACHE_DIR, doc_formats)
 
     if result["status"] != "success":
         for p in doc_paths.values():

@@ -70,10 +70,16 @@ unnecessary one.
 
 Output ONLY the JSON object, nothing else."""
 
-
+def _docs_text(documents: list[dict]) -> str:
+    lines = []
+    for d in documents:
+        kind = d.get("kind", "pdf")
+        detail = f"{d['page_count']} pages" if d.get("page_count") else kind
+        lines.append(f"{d['label']}: {kind} ({detail})")
+    return "\n".join(lines) or "(none uploaded yet)"
 def _route(user_message: str, documents: list[dict], history: list[dict]) -> dict:
     history_text = "\n".join(f"{m['role']}: {m['content']}" for m in history)
-    docs_text = "\n".join(f"{d['label']}: {d['page_count']} pages" for d in documents) or "(none uploaded yet)"
+    docs_text = _docs_text(documents)
     user_content = (
         f"Documents in this conversation:\n{docs_text}\n\n"
         f"Conversation so far:\n{history_text if history_text else '(no prior messages)'}\n\n"
@@ -129,6 +135,17 @@ Output ONLY a JSON object, nothing else. Choose exactly one "type":
     "params": {{"rotations": [{{"page": 3, "rotation_degrees": 90}}]}}}}
 ], "final_outputs": ["doc1_rotated"]}}
 
+Example — a tool that CAN run with the documents already given should
+just run, never ask for confirmation first:
+User has uploaded doc_1 (one image) and says "convert this to a PDF":
+{{"type": "workflow", "steps": [
+  {{"id": "image_to_pdf", "tool": "images_to_pdf", "inputs": ["doc_1"], "output": "result",
+    "params": {{}}}}
+], "final_outputs": ["result"]}}
+Do NOT respond with "clarification" here just because a tool's normal use
+case involves more documents — if it also works correctly with what's
+already available, do it immediately.
+
 Rules:
 - Valid tool names are ONLY: {tool_names}. Never invent a tool or use one
   not in this list — if what's needed truly isn't here, use "unsupported".
@@ -143,6 +160,12 @@ Rules:
   unless the user only asked for a specific part.
 - Follow any per-tool NOTE lines above exactly — they contain rules
   (unit conversions, defaults, etc.) specific to that tool.
+- NEVER ask a clarifying question to confirm something you could just do.
+  Only use "clarification" when a REQUIRED value is genuinely missing and
+  has no sensible default — e.g. no password was given, no rotation angle
+  was given, no page number was given. Wanting to double-check with the
+  user before running a normal, unambiguous, already-fully-specified
+  action is NOT a valid reason to ask — just run it.
 
 2. "clarification" — the request matches a listed tool but is missing a
    required detail:
@@ -166,7 +189,7 @@ Output ONLY the JSON object — no other text."""
 def _plan_detailed(user_message: str, documents: list[dict], history: list[dict], candidate_tool_names: list[str]) -> dict:
     candidate_tools = [t for t in TOOLS_INFO if t["name"] in candidate_tool_names]
     history_text = "\n".join(f"{m['role']}: {m['content']}" for m in history)
-    docs_text = "\n".join(f"{d['label']}: {d['page_count']} pages" for d in documents) or "(none uploaded yet)"
+    docs_text = _docs_text(documents)
     user_content = (
         f"Documents in this conversation:\n{docs_text}\n\n"
         f"Conversation so far:\n{history_text if history_text else '(no prior messages)'}\n\n"

@@ -34,7 +34,9 @@ export default function DocumentTabBar({
                 : "border-transparent hover:bg-surface-secondary"
             }`}
           >
-            <FileText className={`size-3.5 shrink-0 ${isActive ? "text-primary" : "text-text-secondary"}`} />
+            <FileText
+              className={`size-3.5 shrink-0 ${isActive ? "text-primary" : "text-text-secondary"}`}
+            />
             <Text
               size="xs"
               weight={isActive ? "medium" : "normal"}
@@ -50,7 +52,7 @@ export default function DocumentTabBar({
       <input
         ref={inputRef}
         type="file"
-        accept="application/pdf"
+        accept=".pdf,.jpg,.jpeg,.png"
         multiple
         className="hidden"
         onChange={(e) => {
@@ -64,8 +66,16 @@ export default function DocumentTabBar({
         disabled={isAdding}
         className="ml-auto flex shrink-0 items-center gap-1.5 rounded-full border border-dashed border-border px-3 py-1.5 text-text-secondary transition-colors hover:border-primary hover:text-primary disabled:opacity-50"
       >
-        {isAdding ? <Loader2 className="size-3.5 animate-spin" /> : <Plus className="size-3.5" />}
-        <Text size="xs" color="text-secondary" className={isAdding ? "" : "group-hover:text-primary"}>
+        {isAdding ? (
+          <Loader2 className="size-3.5 animate-spin" />
+        ) : (
+          <Plus className="size-3.5" />
+        )}
+        <Text
+          size="xs"
+          color="text-secondary"
+          className={isAdding ? "" : "group-hover:text-primary"}
+        >
           {isAdding ? "Adding…" : "Add PDF"}
         </Text>
       </button>

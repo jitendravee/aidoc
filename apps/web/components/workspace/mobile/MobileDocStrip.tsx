@@ -35,7 +35,11 @@ export default function MobileDocStrip({
           </Text>
         )}
         <div className="h-4 w-px bg-border" />
-        <button onClick={() => setMenuOpen((v) => !v)} className="p-1 text-text-secondary" aria-label="Document options">
+        <button
+          onClick={() => setMenuOpen((v) => !v)}
+          className="p-1 text-text-secondary"
+          aria-label="Document options"
+        >
           <MoreHorizontal className="size-4" />
         </button>
       </div>
@@ -50,19 +54,25 @@ export default function MobileDocStrip({
                 setMenuOpen(false);
               }}
               className={`flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left ${
-                d.document_id === activeDoc?.document_id ? "bg-primary/5" : "hover:bg-surface-secondary"
+                d.document_id === activeDoc?.document_id
+                  ? "bg-primary/5"
+                  : "hover:bg-surface-secondary"
               }`}
             >
               <FileText className="size-3.5 shrink-0 text-text-secondary" />
-              <Text size="xs" truncate>{d.filename}</Text>
+              <Text size="xs" truncate>
+                {d.filename}
+              </Text>
             </button>
           ))}
           <label className="mt-1 flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-primary hover:bg-primary/5">
             <Plus className="size-3.5" />
-            <Text size="xs" color="primary">{isAdding ? "Adding…" : "Add PDF"}</Text>
+            <Text size="xs" color="primary">
+              {isAdding ? "Adding…" : "Add PDF"}
+            </Text>
             <input
               type="file"
-              accept="application/pdf"
+              accept=".pdf,.jpg,.jpeg,.png"
               multiple
               className="hidden"
               onChange={(e) => {

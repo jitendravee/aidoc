@@ -1,6 +1,6 @@
 import os
 import zipfile
-from apps.api.services.kinds import format_extension
+from apps.api.services.kinds import format_extension, format_kind
 from workers.tools.registry import TOOL_REGISTRY
 from workers.tools.base import ToolError
 from apps.api.services.workflow_validator import validate_workflow, get_output_keys
@@ -15,8 +15,9 @@ def _zip_paths(paths: list[str], zip_path: str) -> str:
     return zip_path
 
 
-def execute_plan(plan: dict, doc_paths: dict[str, str], cache_dir: str) -> dict:
+def execute_plan(plan: dict, doc_paths: dict[str, str], cache_dir: str,  doc_formats: dict[str, str] | None = None, ) -> dict:
     plan_type = plan.get("type", "workflow")
+    doc_formats = doc_formats or {}
 
     if plan_type in ("chat", "unsupported"):
         return {"status": plan_type, "message": plan.get("message", "")}
@@ -34,7 +35,12 @@ def execute_plan(plan: dict, doc_paths: dict[str, str], cache_dir: str) -> dict:
     # Every document is a bundle: {"paths": [...], "kind": ..., "format": ...}.
     # Originals are always PDFs today — wrapped once here.
     documents: dict[str, dict] = {
-        label: {"paths": [path], "kind": "pdf", "format": "pdf"} for label, path in doc_paths.items()
+        label: {
+            "paths": [path],
+            "kind": format_kind(doc_formats.get(label, "pdf")),
+            "format": doc_formats.get(label, "pdf"),
+        }
+        for label, path in doc_paths.items()
     }
     provenance: dict[str, set[str]] = {label: {label} for label in doc_paths}
     diff_summaries = []
@@ -151,8 +157,11 @@ def _validate_step(step: dict, documents: dict[str, dict]) -> str | None:
     arity = tool.get("arity", "single")
     if arity == "single" and len(inputs) != 1:
         return f"Tool '{tool_name}' takes exactly one input document"
-    if arity == "multi" and len(inputs) < 2:
-        return f"Tool '{tool_name}' needs at least two input documents"
+    if arity == "multi":
+        min_inputs = tool.get("min_inputs", 2)  # default preserves current behavior for merge_pdfs etc.
+        if len(inputs) < min_inputs:
+            plural = "s" if min_inputs != 1 else ""
+            return f"Tool '{tool_name}' needs at least {min_inputs} input document{plural}"
 
     output_keys = get_output_keys(step)
     if not output_keys:

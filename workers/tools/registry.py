@@ -1,6 +1,6 @@
 import pikepdf
 from workers.tools import (
-    delete_pages, merge_pdfs, pdf_to_docx, pdf_to_jpg, pdf_to_png, pdf_to_pptx, protect_pdf, rotate_pages, split_pdf,
+    delete_pages, images_to_pdf, merge_pdfs, pdf_to_docx, pdf_to_jpg, pdf_to_png, pdf_to_pptx, protect_pdf, rotate_pages, split_pdf,
     unlock_pdf, watermark_pdf, extract_pages, organize_pdf, crop_pdf,
     add_page_numbers, compress_pdf,
 )
@@ -67,6 +67,28 @@ TOOL_REGISTRY = {
         "transparency, or lossless/crisp output; otherwise pdf_to_jpg "
         "is the default for a generic 'convert to image' request.",
     ],
+},
+"images_to_pdf": {
+    "input_model": images_to_pdf.ImagesToPdfInput,
+    "run": images_to_pdf.run,
+    "description": "Combine one or more images — or a zip bundle of many images — into a single PDF, one image per page.",
+    "arity": "multi",
+    "min_inputs": 1,   # NEW — a single image is a valid request too, not just batches
+    "category": "conversion",
+    "output_count": 1,
+    "params_schema": {},
+"usage_notes": [
+    "A single image is a completely valid, complete request — convert "
+    "it to a one-page PDF immediately, do NOT ask for confirmation or "
+    "for more images first.",
+    "Inputs may be individual image documents OR a single zip-bundle "
+    "document containing many images (created when a user uploads a "
+    "large batch of photos at once) — treat a zip document the same "
+    "as any other input label; the tool handles unzipping itself.",
+    "Page order follows the order of the input labels given (and, "
+    "within a zip bundle, the upload order) — don't reorder unless "
+    "the user explicitly asks for a specific sequence.",
+],
 },
 # registry.py entry
 "pdf_to_docx": {

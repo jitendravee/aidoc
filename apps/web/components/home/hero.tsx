@@ -40,7 +40,7 @@ export const Hero = ({ onFilesSelected, isUploading }: HeroProps) => {
     e.preventDefault();
     setIsDragActive(false);
     const files = Array.from(e.dataTransfer.files ?? []).filter(
-      (f) => f.type === "application/pdf"
+      (f) => f.type === ".pdf,.jpg,.jpeg,.png",
     );
     if (files.length > 0) onFilesSelected(files);
   }
@@ -55,10 +55,22 @@ export const Hero = ({ onFilesSelected, isUploading }: HeroProps) => {
       }`}
     >
       <div className="flex flex-col gap-5 lg:gap-8 w-full lg:w-fit items-center lg:items-start text-center lg:text-left ">
-        <Text as="h1" size={{ base: "4xl", lg: "6xl" }} color="primary" weight="semibold" family="heading">
+        <Text
+          as="h1"
+          size={{ base: "4xl", lg: "6xl" }}
+          color="primary"
+          weight="semibold"
+          family="heading"
+        >
           Edit PDFs <br className="hidden md:block" />
           Just by{" "}
-          <Text as="span" size={{ base: "4xl", lg: "6xl" }} color="primary" weight="bold" family="sans">
+          <Text
+            as="span"
+            size={{ base: "4xl", lg: "6xl" }}
+            color="primary"
+            weight="bold"
+            family="sans"
+          >
             Asking.
           </Text>
         </Text>
@@ -72,7 +84,7 @@ export const Hero = ({ onFilesSelected, isUploading }: HeroProps) => {
           <input
             ref={fileInputRef}
             type="file"
-            accept="application/pdf"
+            accept=".pdf,.jpg,.jpeg,.png"
             multiple
             onChange={handleFileInputChange}
             className="hidden"
@@ -84,26 +96,34 @@ export const Hero = ({ onFilesSelected, isUploading }: HeroProps) => {
             onClick={handleButtonClick}
             disabled={isUploading}
           >
-            {isUploading ? "Uploading…" : "Upload PDF"}
+            {isUploading ? "Uploading…" : "Upload"}
           </Button>
 
           <Text size={{ base: "xs", md: "sm" }} color="text-secondary">
-            {isDragActive ? "Drop your PDF(s) here" : "or drag & drop your PDF here"}
+            {isDragActive
+              ? "Drop your PDF(s) here"
+              : "or drag & drop your PDF here"}
           </Text>
         </div>
 
         <div className="flex flex-wrap gap-3 md:gap-6 items-center justify-center">
           <div className="flex flex-row gap-1.5 items-center">
             <LockKeyhole className="text-primary w-4 h-4 md:w-4 md:h-4" />
-            <Text size={{ base: "2xs", md: "xs" }} color="text-secondary">No sign up</Text>
+            <Text size={{ base: "2xs", md: "xs" }} color="text-secondary">
+              No sign up
+            </Text>
           </div>
           <div className="flex flex-row gap-1.5 items-center">
             <ShieldCheck className="text-primary w-4 h-4 md:w-4 md:h-4" />
-            <Text size={{ base: "2xs", md: "xs" }} color="text-secondary">Secure & Private</Text>
+            <Text size={{ base: "2xs", md: "xs" }} color="text-secondary">
+              Secure & Private
+            </Text>
           </div>
           <div className="flex flex-row gap-1.5 items-center">
             <Zap className="text-primary w-4 h-4 md:w-4 md:h-4" />
-            <Text size={{ base: "2xs", md: "xs" }} color="text-secondary">Free to use</Text>
+            <Text size={{ base: "2xs", md: "xs" }} color="text-secondary">
+              Free to use
+            </Text>
           </div>
         </div>
       </div>
