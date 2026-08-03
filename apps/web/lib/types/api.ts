@@ -9,7 +9,7 @@ export type DocumentKind =
   | "pdf"
   | "image"
   | "pptx"
-  | "docx" |"zip"
+  | "docx" |"zip" |"txt"
   | "xlsx";
 
 export interface WorkspaceDocument {

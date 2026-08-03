@@ -15,7 +15,6 @@ COMING_SOON = [
     {"name": "ocr_pdf", "label": "OCR PDF", "description": "Easily convert scanned PDFs into searchable and selectable documents.", "category": "extract"},
     {"name": "translate_pdf", "label": "Translate PDF", "description": "Easily translate PDF files powered by AI, keeping layout intact.", "category": "ai"},
     {"name": "summarize_pdf", "label": "AI Summarizer", "description": "Quickly generate concise summaries of PDF documents.", "category": "ai"},
-    {"name": "redact_pdf", "label": "Redact PDF", "description": "Permanently remove sensitive information from a PDF.", "category": "security"},
     {"name": "sign_pdf", "label": "Sign PDF", "description": "Sign yourself or request electronic signatures from others.", "category": "security"},
 ]
 

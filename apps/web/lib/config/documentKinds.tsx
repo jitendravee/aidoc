@@ -11,6 +11,7 @@ import type { DocumentKind, WorkspaceDocument } from "@/lib/types/api";
 import PdfViewer from "@/components/workspace/previews/PdfViewer";
 import ImageViewer from "@/components/workspace/previews/ImageViewer";
 import UnsupportedPreview from "@/components/workspace/previews/UnsupportedPreview";
+import TextViewer from "@/components/workspace/previews/TextViewer";
 
 interface DocumentKindConfig {
   label: string;
@@ -26,4 +27,5 @@ export const DOCUMENT_KIND_CONFIG: Record<DocumentKind, DocumentKindConfig> = {
   docx: { label: "Word", icon: FileType2, Preview: UnsupportedPreview },
   xlsx: { label: "Excel", icon: FileSpreadsheet, Preview: UnsupportedPreview },
   zip: { label: "Zip Archive", icon: Archive, Preview: UnsupportedPreview },
+  txt: { label: "Text File", icon: FileText, Preview: TextViewer },
 };

@@ -695,6 +695,446 @@ export const BLOG_POSTS: BlogPost[] = [
         ],
       },
     ],
+  },{
+    slug: "password-protect-pdf-free",
+    title: "How to Password Protect a PDF for Free",
+    description:
+      "Lock a PDF with a password so only people who know it can open the file — for tax documents, contracts, or anything sensitive being emailed or shared.",
+    publishedAt: "2026-08-04",
+    updatedAt: "2026-08-04",
+    readingTime: "5 min read",
+    ctaText: "Password protect your PDF now",
+    sections: [
+      {
+        heading: "What password protecting a PDF actually does",
+        paragraphs: [
+          "Unlike a watermark, a password is a real technical barrier, not just a visual signal. Once a PDF is password protected, it can't be opened at all — not previewed, not skimmed, not even the first page glanced at — without the correct password. This is the right tool when the goal is genuinely restricting who can access a file's contents, not just discouraging careless sharing.",
+          "This comes up constantly with tax documents, medical records, financial statements, legal contracts, and anything else where the content itself needs to stay private in transit, not just marked as sensitive.",
+        ],
+      },
+      {
+        heading: "How to password protect a PDF online for free",
+        paragraphs: ["The general process across most free tools:"],
+        list: [
+          "Upload the PDF you want to lock.",
+          "Enter and confirm a password.",
+          "Run the tool and download the protected file.",
+          "Test it by opening the downloaded file and confirming it actually prompts for the password.",
+        ],
+      },
+      {
+        heading: "Choosing a password that's actually secure",
+        paragraphs: [
+          "A weak password on a PDF is barely better than no password at all, since short or common passwords can be cracked by brute-force tools in minutes. Aim for at least 8-12 characters, and avoid anything tied to the document itself, like a company name, a date mentioned in the file, or a person's name from the content. A short random phrase is usually both stronger and easier to remember than a string of substituted symbols.",
+          "It's also worth sending the password to the recipient through a different channel than the file itself. If both travel in the same email, anyone who intercepts the email has both the lock and the key.",
+        ],
+      },
+      {
+        heading: "Password protect by just asking",
+        paragraphs: [
+          'FlowPDF handles this the same way as everything else, with one difference worth knowing: the AI never asks for a password directly in the chat text. Type "password protect this PDF" and it will prompt you separately for the password itself, rather than having you type a sensitive password into the same box as a regular chat message.',
+        ],
+      },
+      {
+        heading: "What a password protects against, and what it doesn't",
+        paragraphs: [
+          "A password stops someone from opening the file without it — that's real protection. It doesn't stop someone who already has the password from forwarding the file to someone else, and it doesn't protect the file if it's stored somewhere insecure before it's even locked. Password protection secures the file itself; it's not a substitute for being careful about who you send it to and where it's stored.",
+        ],
+      },
+      {
+        heading: "Related PDF tasks",
+        paragraphs: [
+          "If the goal is signaling sensitivity rather than technically restricting access, a confidential watermark solves a different, complementary problem — the two are often used together on the same document. And if you've received a password-protected file and need to remove the lock, unlocking a PDF covers the reverse process.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "unlock-pdf-remove-password-free",
+    title: "How to Unlock a PDF and Remove Its Password for Free",
+    description:
+      "Remove password protection from a PDF you already have the password for — so it can be edited, printed, or shared without re-entering it every time.",
+    publishedAt: "2026-08-04",
+    updatedAt: "2026-08-04",
+    readingTime: "4 min read",
+    ctaText: "Unlock your PDF now",
+    sections: [
+      {
+        heading: "Why unlock a PDF you already have access to",
+        paragraphs: [
+          "This isn't about bypassing security on a file that isn't yours — it's for a document you own or have permission to modify, where re-typing the password every time you open it has become more annoying than useful. Once you've unlocked a file, it opens normally for anyone, which is usually fine once it's past the stage of needing restricted access, or if you're about to edit it and re-protect it with a new password anyway.",
+        ],
+      },
+      {
+        heading: "How to unlock a PDF online for free",
+        paragraphs: ["The typical process:"],
+        list: [
+          "Upload the password-protected PDF.",
+          "Enter the current password when prompted.",
+          "Run the tool — it removes the password protection entirely.",
+          "Download the unlocked file and confirm it opens without a prompt.",
+        ],
+      },
+      {
+        heading: "Unlock by just asking",
+        paragraphs: [
+          'FlowPDF handles this the same way as protecting a PDF — upload the file and type "unlock this PDF" or "remove the password from this." The AI will prompt you separately for the current password rather than having you type it into the regular chat, and once it\'s correct, the file comes back with the protection removed.',
+        ],
+      },
+      {
+        heading: "Removing content stays exactly the same",
+        paragraphs: [
+          "Unlocking a PDF only removes the password layer — it doesn't touch the content, formatting, images, or layout in any way. The file you get back reads identically to the original; the only difference is it no longer asks for a password before opening.",
+        ],
+      },
+      {
+        heading: "If you don't know the password",
+        paragraphs: [
+          "This process requires knowing the current password — it's designed for removing protection you have legitimate access to, not for cracking a lock on a file you don't have permission to open. If you've genuinely lost the password to your own file, most PDF security tools (this one included) won't help, since bypassing password protection without the password is a fundamentally different, much riskier capability that legitimate tools intentionally don't offer.",
+        ],
+      },
+      {
+        heading: "Related PDF tasks",
+        paragraphs: [
+          "Once a file is unlocked, it's often the right moment to make other edits — rotate a sideways page, delete an outdated section, or add page numbers — before deciding whether to add a password back with a fresh, stronger one when you're done.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "extract-pages-from-pdf-free",
+    title: "How to Extract Specific Pages From a PDF for Free",
+    description:
+      "Pull out just the pages you need — a single page, a range, or a scattered selection — into a brand new PDF, leaving the original document untouched.",
+    publishedAt: "2026-08-04",
+    updatedAt: "2026-08-04",
+    readingTime: "4 min read",
+    ctaText: "Extract pages from your PDF now",
+    sections: [
+      {
+        heading: "Extracting vs. splitting vs. deleting",
+        paragraphs: [
+          "These three get confused constantly, so it's worth being precise. Extracting pulls out a specific subset of pages into a new file and leaves the original document exactly as it was. Splitting divides an entire document into several smaller files, covering every page — nothing is left out. Deleting removes pages from the original document permanently, with nothing pulled out separately. If you want pages 5 through 9 of a 40-page report as their own file while the original stays intact, that's extracting.",
+        ],
+      },
+      {
+        heading: "How to extract pages from a PDF online for free",
+        paragraphs: ["The typical process:"],
+        list: [
+          "Upload the PDF.",
+          "Select the specific pages or page range you want to pull out.",
+          "Run the extraction — the selected pages become a new, standalone PDF.",
+          "Download the new file; the original document is unaffected.",
+        ],
+      },
+      {
+        heading: "Extract pages by just naming them",
+        paragraphs: [
+          'With FlowPDF, upload the file and type "extract pages 8 to 15" or "pull out pages 2, 5, and 9 into a new PDF." The order you name the pages in is the order they\'ll appear in the resulting file, so you can even reorder while extracting — "extract page 9, then page 2" gives you a two-page file in that exact sequence.',
+        ],
+      },
+      {
+        heading: "Common mistakes",
+        paragraphs: [
+          "A couple of things trip people up here.",
+        ],
+        list: [
+          "Confusing the printed page number with the PDF's actual page position — a document with an unnumbered cover page will have its printed 'page 1' sitting at the PDF's second position",
+          "Extracting a page range that doesn't include a page you actually needed — double-check the end of the range, since off-by-one mistakes here are common",
+        ],
+      },
+      {
+        heading: "Related PDF tasks",
+        paragraphs: [
+          "If you need the whole document broken into several pieces rather than just one section pulled out, splitting a PDF covers that instead. And if the extracted pages need to be recombined with something else afterward, merging PDFs takes just as little effort.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "organize-reorder-pdf-pages-free",
+    title: "How to Reorder and Organize PDF Pages for Free",
+    description:
+      "Rearrange the pages of a PDF into a new sequence — for scanned documents that came out of order, or reports that need restructuring before sending.",
+    publishedAt: "2026-08-04",
+    updatedAt: "2026-08-04",
+    readingTime: "4 min read",
+    ctaText: "Organize your PDF pages now",
+    sections: [
+      {
+        heading: "When pages end up in the wrong order",
+        paragraphs: [
+          "This happens more than people expect. A double-sided document scanned as single pages can come out with the back sides interleaved in the wrong place. A report assembled from several source files might have sections in the wrong sequence. A presentation exported to PDF might need its slide order changed after the fact without going back to the original slide software. In each case, the fix is the same: reorder the existing pages without adding, removing, or editing any of their content.",
+        ],
+      },
+      {
+        heading: "How to reorder PDF pages online for free",
+        paragraphs: ["The typical process:"],
+        list: [
+          "Upload the PDF.",
+          "View the current page order, usually as thumbnails.",
+          "Drag pages into the new order, or specify the new sequence directly.",
+          "Run the tool and download the reorganized file.",
+        ],
+      },
+      {
+        heading: "Reorganize by just describing the new order",
+        paragraphs: [
+          'FlowPDF skips the drag-and-drop thumbnail grid — upload the file and type something like "move page 6 to the front" or "put the pages in this order: 3, 1, 2, 4." The AI rearranges the document to match and hands back the result.',
+        ],
+      },
+      {
+        heading: "Reordering vs. rotating vs. reversing",
+        paragraphs: [
+          "It's worth distinguishing this from two related but different fixes. Reordering changes the sequence of pages. Rotating changes the orientation of a page without moving its position. Reversing flips the entire document's order end to end (last page first) — useful specifically when an entire scan came out backwards, rather than needing a custom rearrangement.",
+        ],
+      },
+      {
+        heading: "Related PDF tasks",
+        paragraphs: [
+          "If a page also needs to be rotated once it's in the right position, that's a quick follow-up edit. And if the whole document simply needs to run in reverse order rather than a custom sequence, that's a faster, more specific fix than reordering page by page.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "crop-pdf-pages-free",
+    title: "How to Crop a PDF's Margins for Free",
+    description:
+      "Trim the white space around a PDF's pages — to remove scanner margins, tighten a layout, or cut unwanted content from the edges.",
+    publishedAt: "2026-08-04",
+    updatedAt: "2026-08-04",
+    readingTime: "4 min read",
+    ctaText: "Crop your PDF now",
+    sections: [
+      {
+        heading: "Why a PDF ends up with too much margin",
+        paragraphs: [
+          "Scanned documents are the most common culprit — a scanner captures more of the page bed than the actual document, leaving a border of blank space or even the edge of the scanner glass visible. Slide decks exported to PDF sometimes carry wide margins that made sense on screen but waste space in print. Cropping removes that extra margin uniformly, tightening the page around the actual content.",
+        ],
+      },
+      {
+        heading: "How to crop a PDF online for free",
+        paragraphs: ["The typical process:"],
+        list: [
+          "Upload the PDF.",
+          "Set how much margin to remove — usually in inches, centimeters, or points, from each edge.",
+          "Choose whether to crop every page or just specific ones.",
+          "Run the tool and download the cropped file.",
+        ],
+      },
+      {
+        heading: "Crop by just describing the margin",
+        paragraphs: [
+          'With FlowPDF, upload the PDF and type "crop half an inch off every page" or "crop the top margin on page 1 only." Measurements in inches or centimeters are converted automatically — there\'s no unit dropdown to configure first.',
+        ],
+      },
+      {
+        heading: "A note on what cropping does and doesn't do",
+        paragraphs: [
+          "Cropping changes the visible page boundary — it doesn't shrink or reflow the content inside it. If you crop too aggressively, part of the actual content (not just margin) can end up cut off the edge of the visible page. It's worth cropping a small, conservative amount first and checking the result before applying a larger crop across a long document.",
+        ],
+      },
+      {
+        heading: "Related PDF tasks",
+        paragraphs: [
+          "If the page size itself needs to change — not just the margins — resizing to a standard paper size is the more direct fix. And if the goal is a smaller file rather than a tighter layout, compressing the PDF addresses file size without touching the visible margins at all.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "extract-images-from-pdf-free",
+    title: "How to Extract Images From a PDF for Free",
+    description:
+      "Pull the actual embedded photos out of a PDF at their original quality — different from converting pages to images, which turns the whole page into a picture.",
+    publishedAt: "2026-08-04",
+    updatedAt: "2026-08-04",
+    readingTime: "4 min read",
+    ctaText: "Extract images from your PDF now",
+    sections: [
+      {
+        heading: "This is not the same as converting a PDF to JPG",
+        paragraphs: [
+          "It's an easy mix-up, so worth clearing up first. Converting a PDF to JPG renders every page — text, layout, and all — as a picture, one image per page, regardless of whether the page contains any actual photos. Extracting images does something different: it finds the real embedded image files inside the PDF (photos, logos, scanned graphics) and pulls out just those, at whatever resolution they were originally embedded at, ignoring the surrounding text entirely.",
+          "If a report has three photos scattered across ten pages of text and you only want the photos themselves, extracting images gets you exactly that. Converting the whole PDF to JPG would instead give you ten full-page pictures, most of which are just text.",
+        ],
+      },
+      {
+        heading: "How to extract images from a PDF online for free",
+        paragraphs: ["The typical process:"],
+        list: [
+          "Upload the PDF.",
+          "Run the extraction — the tool scans every page for embedded images.",
+          "Download the results, usually as a ZIP if the document has more than one image.",
+        ],
+      },
+      {
+        heading: "Extract by just asking",
+        paragraphs: [
+          'FlowPDF handles this the same way as everything else — upload the PDF and type "pull the images out of this" or "extract the photos from this document." You get back the embedded images themselves, not full-page renders.',
+        ],
+      },
+      {
+        heading: "When there's nothing to extract",
+        paragraphs: [
+          "If a PDF is made entirely of text with no embedded photos, diagrams, or graphics, there's nothing for this tool to find — and it won't invent results. This is common with scanned documents too, where what looks like a photo of a page is technically one big embedded image covering the whole page; extracting it back out just returns the entire scanned page as a single image, which is expected but occasionally surprising the first time.",
+        ],
+      },
+      {
+        heading: "Related PDF tasks",
+        paragraphs: [
+          "If what you actually need is a picture of the whole page rather than just the embedded photos, converting to JPG or PNG is the right tool instead. And if you're building a new PDF from a batch of images rather than pulling them out of one, converting images to PDF covers the reverse direction.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "convert-pdf-to-grayscale-black-and-white-free",
+    title: "How to Convert a PDF to Grayscale (Black and White) for Free",
+    description:
+      "Strip the color out of every page of a PDF — for cheaper printing, a more formal look, or when color simply isn't needed.",
+    publishedAt: "2026-08-04",
+    updatedAt: "2026-08-04",
+    readingTime: "4 min read",
+    ctaText: "Convert your PDF to grayscale now",
+    sections: [
+      {
+        heading: "Why convert a PDF to grayscale",
+        paragraphs: [
+          "Color printing costs noticeably more per page than black and white on most office and home printers, so a colorful document being printed in bulk is often converted to grayscale first purely to cut the cost. Beyond printing, some documents just read better in black and white — legal filings, formal reports, and anything where color feels more like a distraction than useful information.",
+        ],
+      },
+      {
+        heading: "How to convert a PDF to grayscale online for free",
+        paragraphs: ["The typical process:"],
+        list: [
+          "Upload the PDF.",
+          "Run the conversion — every page is converted to black and white.",
+          "Download the grayscale version and check that text and images are still legible.",
+        ],
+      },
+      {
+        heading: "Convert by just asking",
+        paragraphs: [
+          'With FlowPDF, upload the PDF and type "convert this to grayscale" or "make this black and white." Every page in the document is converted in one pass.',
+        ],
+      },
+      {
+        heading: "A tradeoff worth knowing about",
+        paragraphs: [
+          "Converting to grayscale generally works by re-rendering each page as a flattened image with the color removed, which means the resulting PDF's text is no longer selectable or searchable the way the original might have been. If you need to keep the text copyable or searchable after the conversion, it's worth checking the result before relying on it for anything beyond printing or viewing.",
+        ],
+      },
+      {
+        heading: "Related PDF tasks",
+        paragraphs: [
+          "If file size, not color, is the actual problem, compressing the PDF addresses that more directly without changing how the document looks. And if only specific pages need to lose their color rather than the whole document, extracting just those pages first keeps the rest of the file untouched.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "remove-pdf-metadata-free",
+    title: "How to Remove Metadata From a PDF for Free",
+    description:
+      "Strip the author, creation software, and other hidden document properties from a PDF before sharing it publicly — a quick but often-overlooked privacy step.",
+    publishedAt: "2026-08-04",
+    updatedAt: "2026-08-04",
+    readingTime: "5 min read",
+    ctaText: "Remove metadata from your PDF now",
+    sections: [
+      {
+        heading: "The information hiding in a PDF's properties",
+        paragraphs: [
+          "Every PDF carries metadata most people never see — a title, author name, the software used to create it, a creation and modification date, and sometimes far more, depending on how the file was produced. This isn't visible on the page itself; it shows up in a viewer's 'document properties' panel, and it's exactly the kind of thing that can accidentally reveal a real name, an internal software version, or a company identity on a document meant to be anonymous or public-facing.",
+        ],
+      },
+      {
+        heading: "When this actually matters",
+        paragraphs: [
+          "It comes up most with documents going out anonymously or to a wide public audience — a public comment submission, an anonymized report, a document being released under a freedom-of-information request, or any file where the author's identity specifically shouldn't be attached. It also matters for basic professionalism: a client-facing PDF that still lists a previous employee as the 'author' in its metadata, or shows an internal software name in its properties, looks sloppier than it needs to.",
+        ],
+      },
+      {
+        heading: "How to remove PDF metadata online for free",
+        paragraphs: ["The typical process:"],
+        list: [
+          "Upload the PDF.",
+          "Run the tool — it strips all metadata fields, not just some of them.",
+          "Download the file and check its properties panel to confirm the fields are actually empty.",
+        ],
+      },
+      {
+        heading: "Remove metadata by just asking",
+        paragraphs: [
+          'FlowPDF handles this the same way as everything else — upload the file and type "strip the metadata from this" or "remove my name from this file\'s properties." Every metadata field is cleared, not just the author field.',
+        ],
+      },
+      {
+        heading: "Removing vs. editing metadata",
+        paragraphs: [
+          "It's worth distinguishing this from setting metadata to something specific. If you want the author field to say a company name instead of a personal one, that's editing metadata to a new value, not removing it. Removing means clearing it out entirely, leaving the fields blank rather than replaced.",
+        ],
+      },
+      {
+        heading: "Related PDF tasks",
+        paragraphs: [
+          "If the concern is content on the visible pages rather than hidden document properties, redacting specific sensitive text solves a different problem and is worth doing alongside metadata removal, not instead of it.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "extract-text-from-pdf-free",
+    title: "How to Extract Plain Text From a PDF for Free",
+    description:
+      "Pull the readable text out of a PDF into a plain .txt file — for quick copy-paste, search, or feeding into another tool, with no formatting to strip out later.",
+    publishedAt: "2026-08-04",
+    updatedAt: "2026-08-04",
+    readingTime: "4 min read",
+    ctaText: "Extract text from your PDF now",
+    sections: [
+      {
+        heading: "When you want text, not a document",
+        paragraphs: [
+          "Sometimes the goal isn't an editable Word document with the original layout preserved — it's just the raw words. Feeding a PDF's content into another tool, searching across it more easily, or copy-pasting a large chunk of text without fighting PDF selection quirks are all cases where a plain .txt file is more useful than a fully formatted .docx.",
+        ],
+      },
+      {
+        heading: "Plain text vs. converting to Word",
+        paragraphs: [
+          "This is the key distinction to understand before choosing between the two. Converting to Word reconstructs layout, formatting, and structure, aiming to recreate something close to the original document, editable. Extracting to plain text throws all of that away and keeps only the words themselves, with no fonts, no tables, no page structure — just text, one block after another. If you need to edit and reprint something that looks like the original, use Word conversion. If you just need the words, plain text is faster and simpler.",
+        ],
+      },
+      {
+        heading: "How to extract text from a PDF online for free",
+        paragraphs: ["The typical process:"],
+        list: [
+          "Upload the PDF.",
+          "Run the extraction.",
+          "Download the resulting .txt file.",
+        ],
+      },
+      {
+        heading: "Extract by just asking",
+        paragraphs: [
+          'With FlowPDF, upload the file and type "extract the text from this" or "give me this as plain text." The result is a plain .txt file with the document\'s readable text and nothing else.',
+        ],
+      },
+      {
+        heading: "Scanned PDFs won't have extractable text",
+        paragraphs: [
+          "This only works on PDFs with a real, digital text layer. If the PDF is a scanned image — a photo of a page rather than digitally created text — there's no character data to extract, and this tool will come back empty. That's expected behavior, not a bug; a scanned document needs OCR (optical character recognition) first to recognize the characters in the image before any text can be pulled out.",
+        ],
+      },
+      {
+        heading: "Related PDF tasks",
+        paragraphs: [
+          "If you need the text with formatting and layout preserved rather than stripped down to plain text, converting to Word is the better fit. And if the document is a scan with no real text layer at all, that's the root cause worth checking before assuming the extraction failed for another reason.",
+        ],
+      },
+    ],
   },
   {
     slug: "view-pdf-online-free",

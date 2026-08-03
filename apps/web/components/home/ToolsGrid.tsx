@@ -30,6 +30,11 @@ import {
   FileImage,
   FilePlus2,
   Layers,
+  ImageDown,
+  Contrast,
+  FlipHorizontal2,
+  Info,
+  ClipboardEdit,
   type LucideIcon,
 } from "lucide-react";
 
@@ -46,6 +51,7 @@ interface Tool {
 // (see getIcon below), which is easy to miss visually. Cross-check this
 // map against the registry any time a tool is renamed or added.
 const ICON_MAP: Record<string, LucideIcon> = {
+  // Page tools
   delete_pages: Trash2,
   rotate_pages: RotateCw,
   split_pdf: Scissors,
@@ -54,25 +60,36 @@ const ICON_MAP: Record<string, LucideIcon> = {
   crop_pdf: Crop,
   add_page_numbers: Hash,
   insert_blank_page: FilePlus2,
+  reverse_pages: FlipHorizontal2,
 
+  // Document tools
   merge_pdfs: Merge,
   compress_pdf: Layers,
   flatten_pdf: FileStack,
+  grayscale_pdf: Contrast,
+  edit_metadata: Info,
+  fill_form: ClipboardEdit,
 
+  // Security
   protect_pdf: Lock,
   unlock_pdf: Unlock,
   watermark_pdf: Stamp,
   redact_pages: EyeOff,
 
+  // Conversion — image out
   pdf_to_jpg: Image,
   pdf_to_png: FileImage,
   images_to_pdf: Images,
+  extract_images: ImageDown,
 
+  // Conversion — document formats
   pdf_to_pptx: Presentation,
   pdf_to_docx: FileText,
   pdf_to_xlsx: FileSpreadsheet,
   docx_to_pdf: FileText,
 
+  // Not registered as real tools yet — kept here so these render
+  // correctly once/if a "coming soon" placeholder list adds them
   ocr_pdf: ScanText,
   translate_pdf: Languages,
   summarize_pdf: Sparkles,
@@ -113,10 +130,6 @@ export function ToolsGrid() {
 
   function handleToolClick(tool: Tool) {
     if (!tool.available) return;
-    // Carries intent into the workspace — no documents are uploaded yet
-    // at this point, so the workspace's own upload flow takes over from
-    // here; ?tool= is there for the workspace to optionally prefill the
-    // chat input (e.g. "Rotate pages") once a document lands.
     router.push(`/workspace?tool=${encodeURIComponent(tool.name)}`);
   }
 

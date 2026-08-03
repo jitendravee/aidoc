@@ -1,8 +1,8 @@
 import pikepdf
 from workers.tools import (
-    delete_pages, docx_to_pdf, flatten_pdf, images_to_pdf, merge_pdfs, pdf_to_docx, pdf_to_jpg, pdf_to_png, pdf_to_pptx, pdf_to_xlsx, protect_pdf, rotate_pages, split_pdf,
+    add_header_footer, delete_pages, docx_to_pdf, duplicate_pages, edit_metadata, extract_images, fill_form, flatten_pdf, grayscale_pdf, images_to_pdf, merge_pdfs, pdf_to_docx, pdf_to_jpg, pdf_to_png, pdf_to_pptx, pdf_to_txt, pdf_to_xlsx, protect_pdf, resize_pages, reverse_pages, rotate_pages, split_pdf,
     unlock_pdf, watermark_pdf, extract_pages, organize_pdf, crop_pdf,
-    add_page_numbers, compress_pdf,insert_blank_page,redact_pages
+    add_page_numbers, compress_pdf,insert_blank_page,redact_pages,remove_metadata
 )
 
 TOOL_REGISTRY = {
@@ -15,6 +15,63 @@ TOOL_REGISTRY = {
         "output_count": 1,
         "params_schema": {"pages": "list[int] — 1-indexed page numbers to remove"},
     },
+    "add_header_footer": {
+    "input_model": add_header_footer.AddHeaderFooterInput,
+    "run": add_header_footer.run,
+    "description": "Stamp custom text (e.g. a company name, date, or file reference) into the header or footer of every page.",
+    "arity": "single",
+    "category": "page",
+    "output_count": 1,
+    "params_schema": {
+        "text": "string — the text to stamp",
+        "position": '"header-left" | "header-center" | "header-right" | "footer-left" | "footer-center" | "footer-right", default "footer-center"',
+        "font_size": "int, default 9",
+    },
+    "usage_notes": [
+        "Different from add_page_numbers (which specifically numbers "
+        "pages) and watermark_pdf (which stamps large diagonal text "
+        "across the whole page) — this is for small, permanent text in "
+        "the header/footer margin, like a filename, date, or company name.",
+        "If the user wants page numbers specifically, use add_page_numbers "
+        "instead, even if they describe it as 'add text to the footer'.",
+    ],
+},
+    "pdf_to_txt": {
+    "input_model": pdf_to_txt.PdfToTxtInput,
+    "run": pdf_to_txt.run,
+    "description": "Extract all readable text from a PDF into a plain .txt file, with no formatting or layout.",
+    "arity": "single",
+    "category": "conversion",
+    "output_count": 1,
+    "output_kind": "txt",
+    "output_format": "txt",
+    "params_schema": {},
+    "usage_notes": [
+        "This is RAW TEXT ONLY — no layout, no tables, no formatting "
+        "survives. If the user needs editable formatting preserved, use "
+        "pdf_to_docx instead; this is for quick copy-paste/search use cases.",
+        "If the document is a scanned/image-only PDF, this will find no "
+        "text — warn the user rather than producing an empty file.",
+    ],
+},
+    "duplicate_pages": {
+    "input_model": duplicate_pages.DuplicatePagesInput,
+    "run": duplicate_pages.run,
+    "description": "Duplicate a specific page, inserting one or more extra copies right after it.",
+    "arity": "single",
+    "category": "page",
+    "output_count": 1,
+    "params_schema": {
+        "page": "int — 1-indexed page to duplicate",
+        "count": "int, default 1 — how many extra copies to insert",
+    },
+    "usage_notes": [
+        "If the user doesn't say how many copies, default count to 1 "
+        "(one extra copy) rather than asking, unless the request is "
+        "ambiguous about which page.",
+    ],
+},
+
     "rotate_pages": {
         "input_model": rotate_pages.RotatePagesInput,
         "run": rotate_pages.run,
@@ -71,6 +128,126 @@ TOOL_REGISTRY = {
         "protect_pdf adds a password lock instead. If the user says "
         "'make this form uneditable' or 'flatten this', use this tool; "
         "if they say 'password protect' or 'lock with a password', use protect_pdf.",
+    ],
+},"reverse_pages": {
+    "input_model": reverse_pages.ReversePagesInput,
+    "run": reverse_pages.run,
+    "description": "Reverse the order of every page in a document, last page first.",
+    "arity": "single",
+    "category": "page",
+    "output_count": 1,
+    "params_schema": {},
+    "usage_notes": [
+        "This reverses the ENTIRE document — if the user wants a custom "
+        "specific order rather than a straight reversal, use organize_pdf instead.",
+    ],
+},
+"fill_form": {
+    "input_model": fill_form.FillFormInput,
+    "run": fill_form.run,
+    "description": "Fill in values for an existing fillable PDF form's fields.",
+    "arity": "single",
+    "category": "document",
+    "output_count": 1,
+    "params_schema": {"fields": "object — map of form field name to the value to fill in"},
+    "usage_notes": [
+        "You need the EXACT field names as they exist in the PDF, which "
+        "you generally won't know from the conversation alone — if the "
+        "user just says 'fill in my name as John', ask them to confirm "
+        "which field(s) that corresponds to, unless the field names are "
+        "obvious/already stated.",
+        "After filling, the user may also want flatten_pdf to lock the "
+        "filled values in place so the form can't be edited further — "
+        "mention this as a natural next step, don't do it automatically.",
+    ],
+},
+"remove_metadata": {
+    "input_model": remove_metadata.RemoveMetadataInput,
+    "run": remove_metadata.run,
+    "description": "Strip all metadata from a document — author, title, creation date, software used to create it, and anything else in the document properties.",
+    "arity": "single",
+    "category": "security",
+    "output_count": 1,
+    "params_schema": {},
+    "usage_notes": [
+        "Different from edit_metadata — this REMOVES all metadata "
+        "entirely rather than setting specific fields. Use this when the "
+        "user wants privacy/anonymity ('strip the metadata', 'remove my "
+        "name from this file's properties') rather than editing to a "
+        "specific value.",
+    ],
+},
+"resize_pages": {
+    "input_model": resize_pages.ResizePagesInput,
+    "run": resize_pages.run,
+    "description": "Resize every page of a document to a standard paper size (A4, Letter, or Legal).",
+    "arity": "single",
+    "category": "page",
+    "output_count": 1,
+    "params_schema": {"size": '"a4" | "letter" | "legal"'},
+    "usage_notes": [
+        "This changes the page BOX dimensions only — content is not "
+        "rescaled/repositioned to fit, so a page much larger or smaller "
+        "than the target size may end up cropped or with extra blank "
+        "margin. Mention this if the user's pages vary a lot in original size.",
+        "If the user just says 'make this standard size' with no specific "
+        "size named, default to 'a4' unless their document/context "
+        "suggests otherwise (e.g. US-based content implies letter).",
+    ],
+},
+"extract_images": {
+    "input_model": extract_images.ExtractImagesInput,
+    "run": extract_images.run,
+    "description": "Pull the actual embedded photos/images out of a PDF at their original quality — different from pdf_to_jpg, which renders whole pages as images.",
+    "arity": "single",
+    "category": "conversion",
+    "output_count": "dynamic",
+    "output_kind": "image",
+    "zip_outputs": True,
+    "params_schema": {},
+    "usage_notes": [
+        "Use this when the user wants the PHOTOS inside a PDF (e.g. "
+        "'pull the images out of this report'), not the pages themselves "
+        "rendered as pictures — for that, use pdf_to_jpg or pdf_to_png instead.",
+        "If the document has no embedded images (e.g. it's all text or "
+        "the 'images' are actually rendered text), this will find nothing "
+        "— warn the user rather than promising results on a text-only PDF.",
+    ],
+},
+"edit_metadata": {
+    "input_model": edit_metadata.EditMetadataInput,
+    "run": edit_metadata.run,
+    "description": "Edit a document's title, author, or subject metadata — the info shown in a PDF viewer's document properties panel, not visible content on the pages themselves.",
+    "arity": "single",
+    "category": "document",
+    "output_count": 1,
+    "params_schema": {
+        "title": "string, optional — document title",
+        "author": "string, optional — document author",
+        "subject": "string, optional — document subject/description",
+    },
+    "usage_notes": [
+        "At least one of title/author/subject must be given — if the "
+        "user hasn't said what to set any of these to, ask which field(s) "
+        "and what value.",
+        "This changes invisible document PROPERTIES, not anything printed "
+        "on the pages — don't confuse this with watermark_pdf or adding "
+        "visible text to a page.",
+    ],
+},
+    "grayscale_pdf": {
+    "input_model": grayscale_pdf.GrayscalePdfInput,
+    "run": grayscale_pdf.run,
+    "description": "Convert every page of a document to black and white (grayscale) — for printing or reducing color-related file size.",
+    "arity": "single",
+    "category": "document",
+    "output_count": 1,
+    "params_schema": {},
+    "usage_notes": [
+        "This flattens each page to a rendered grayscale image internally, "
+        "so the resulting PDF is no longer text-searchable/selectable — "
+        "mention this tradeoff if the user needs to keep the text editable "
+        "or copyable afterward.",
     ],
 },
     "pdf_to_xlsx": {
