@@ -35,6 +35,11 @@ import {
   FlipHorizontal2,
   Info,
   ClipboardEdit,
+  Maximize2,
+  ShieldOff,
+  FileType,
+  CopyPlus,
+  PanelBottom,
   type LucideIcon,
 } from "lucide-react";
 
@@ -61,6 +66,9 @@ const ICON_MAP: Record<string, LucideIcon> = {
   add_page_numbers: Hash,
   insert_blank_page: FilePlus2,
   reverse_pages: FlipHorizontal2,
+  resize_pages: Maximize2,
+  duplicate_pages: CopyPlus,
+  add_header_footer: PanelBottom,
 
   // Document tools
   merge_pdfs: Merge,
@@ -69,6 +77,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   grayscale_pdf: Contrast,
   edit_metadata: Info,
   fill_form: ClipboardEdit,
+  remove_metadata: ShieldOff,
 
   // Security
   protect_pdf: Lock,
@@ -87,6 +96,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   pdf_to_docx: FileText,
   pdf_to_xlsx: FileSpreadsheet,
   docx_to_pdf: FileText,
+  pdf_to_txt: FileType,
 
   // Not registered as real tools yet — kept here so these render
   // correctly once/if a "coming soon" placeholder list adds them
