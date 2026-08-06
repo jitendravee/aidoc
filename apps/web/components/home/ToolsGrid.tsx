@@ -42,6 +42,7 @@ import {
   PanelBottom,
   type LucideIcon,
 } from "lucide-react";
+import { TOOL_PAGES } from "@/lib/tools/tool-content";
 
 interface Tool {
   name: string;
@@ -138,11 +139,15 @@ export function ToolsGrid() {
   const router = useRouter();
   const { data: tools, isLoading } = useTools();
 
-  function handleToolClick(tool: Tool) {
-    if (!tool.available) return;
+function handleToolClick(tool: Tool) {
+  if (!tool.available) return;
+  const landingPage = TOOL_PAGES.find((t) => t.toolName === tool.name);
+  if (landingPage) {
+    router.push(`/tools/${landingPage.slug}`);
+  } else {
     router.push(`/workspace?tool=${encodeURIComponent(tool.name)}`);
   }
-
+}
   return (
     <section id="tools" className="py-16 lg:py-24">
       <div className="mx-auto mb-4 flex w-fit items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50 px-3 py-1">
