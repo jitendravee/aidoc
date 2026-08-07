@@ -129,52 +129,110 @@ export const BLOG_POSTS: BlogPost[] = [
     ctaText:
       "Upload your PDF and type 'add a CONFIDENTIAL watermark' — FlowPDF applies it in seconds, no signup or software required.",
   },
-  {
-    slug: "merge-pdf-files-free",
-    title: "How to Merge PDF Files for Free (No Sign-Up Required)",
-    description:
-      "Combine two or more PDFs into a single document in seconds — no software install, no account, no watermark. Here's exactly how, plus what to check before you merge.",
-    publishedAt: "2026-07-29",
-    updatedAt: "2026-07-29",
-    readingTime: "4 min read",
-    ctaText: "Merge your PDFs now",
-    sections: [
-      {
-        heading: "Why merge PDFs in the first place?",
-        paragraphs: [
-          "Merging PDFs is one of the most common document tasks there is — combining an invoice with a receipt, stitching together scanned pages into one file, or assembling a report from sections written by different people. Whatever the reason, most people don't want to install desktop software or hand a sensitive document to an unfamiliar site just to do it once.",
-        ],
-      },
-      {
-        heading: "How to merge PDFs online for free",
-        paragraphs: [
-          "The fastest way is to use a browser-based tool that doesn't require creating an account. Here's the general process, whichever tool you use:",
-        ],
-        list: [
-          "Upload the PDF files you want to combine — order matters, since most tools merge them in the sequence you add them.",
-          "Reorder the files if needed, so the final document reads in the right sequence.",
-          "Run the merge and download the combined file.",
-        ],
-      },
-      {
-        heading: "Merge PDFs by just describing what you want",
-        paragraphs: [
-          'FlowPDF skips the drag-and-drop reordering entirely — upload your files, then just type what you want, like "merge these two PDFs" or "rotate the first page of doc 1, then merge it with doc 2." The AI figures out the right order of operations and hands you back the combined file, with no sign-up and nothing installed.',
-        ],
-      },
-      {
-        heading: "What to check before you merge",
-        paragraphs: [
-          "A couple of things are easy to miss and annoying to fix after the fact:",
-        ],
-        list: [
-          "Page order — double check which file should come first, especially with more than two documents.",
-          "Rotated or sideways pages — fix these before merging, since a merged file with mixed orientations is harder to clean up afterward.",
-          "File size — very large merges (dozens of scanned pages) can take longer to process; splitting into two merges is sometimes faster than one giant one.",
-        ],
-      },
-    ],
-  },
+ // Replace the existing "merge-pdf-files-free" object in BLOG_POSTS with this one.
+// Changes from the original:
+//   - readingTime updated (4 min -> 7 min, content roughly doubled)
+//   - added "Common use cases" section (closes gap vs Adobe's use-case list)
+//   - added "Merging without Adobe Acrobat" section (closes gap vs the
+//     Microsoft Community thread ranking for this exact long-tail phrase)
+//   - added a short security/privacy note (closes gap vs Smallpdf's
+//     TLS/encryption/auto-delete messaging)
+//   - added a full FAQ section, matching the pattern already used in your
+//     watermark and password-protect posts (closes gap vs Adobe + Smallpdf
+//     FAQs, and makes this post consistent with the rest of your blog)
+//   - added "Related PDF tasks" section, matching the pattern used
+//     everywhere else in BLOG_POSTS (this post was missing it)
+
+{
+  slug: "merge-pdf-files-free",
+  title: "How to Merge PDF Files for Free (No Sign-Up Required)",
+  description:
+    "Combine two or more PDFs into a single document in seconds — no software install, no account, no watermark. Includes what to do if you don't have Adobe Acrobat, plus answers to the most common merging questions.",
+  publishedAt: "2026-07-29",
+  updatedAt: "2026-08-07",
+  readingTime: "7 min read",
+  ctaText: "Merge your PDFs now",
+  sections: [
+    {
+      heading: "Why merge PDFs in the first place?",
+      paragraphs: [
+        "Merging PDFs is one of the most common document tasks there is — combining an invoice with a receipt, stitching together scanned pages into one file, or assembling a report from sections written by different people. Whatever the reason, most people don't want to install desktop software or hand a sensitive document to an unfamiliar site just to do it once.",
+      ],
+    },
+    {
+      heading: "Common situations where merging comes up",
+      paragraphs: [
+        "A handful of scenarios cover most of the reason people search for this in the first place:",
+      ],
+      list: [
+        "Combining tax forms, receipts, and supporting paperwork into one file before sending it to an accountant",
+        "Merging signed contract pages that came back from different signers as separate scans",
+        "Consolidating a stack of scanned receipts or forms into a single document instead of a folder of loose files",
+        "Assembling a report from sections that were written or reviewed by different people",
+        "Combining a resume and cover letter into one file for a job application that only accepts a single upload",
+      ],
+    },
+    {
+      heading: "How to merge PDFs online for free",
+      paragraphs: [
+        "The fastest way is to use a browser-based tool that doesn't require creating an account. Here's the general process, whichever tool you use:",
+      ],
+      list: [
+        "Upload the PDF files you want to combine — order matters, since most tools merge them in the sequence you add them.",
+        "Reorder the files if needed, so the final document reads in the right sequence.",
+        "Run the merge and download the combined file.",
+      ],
+    },
+    {
+      heading: "Merging without Adobe Acrobat",
+      paragraphs: [
+        "If you're used to Acrobat handling this and don't have a subscription anymore, you're not missing a hidden setting — Windows and macOS don't include a built-in way to merge PDFs into one file. macOS's Preview app can do it (open a PDF, show thumbnails, drag additional PDF pages into the sidebar), but Windows has no equivalent built into File Explorer or the default PDF viewer.",
+        "That gap is exactly why free browser-based mergers exist. You don't need Acrobat, a Microsoft Store app, or anything installed at all — any of the browser-based tools mentioned in this guide, including FlowPDF, work the same whether you're on Windows, macOS, or Linux, since the merging happens through the browser rather than the operating system.",
+      ],
+    },
+    {
+      heading: "Merge PDFs by just describing what you want",
+      paragraphs: [
+        'FlowPDF skips the drag-and-drop reordering entirely — upload your files, then just type what you want, like "merge these two PDFs" or "rotate the first page of doc 1, then merge it with doc 2." The AI figures out the right order of operations and hands you back the combined file, with no sign-up and nothing installed.',
+      ],
+    },
+    {
+      heading: "What happens to your files",
+      paragraphs: [
+        "Uploaded files are processed to perform the merge and are not shared with anyone else. If keeping a sensitive document (a contract, a tax filing, medical paperwork) off third-party servers entirely matters for your use case, that's worth weighing before uploading it to any online tool, FlowPDF included — for genuinely sensitive material, a local desktop option is the more cautious choice even if it's less convenient.",
+      ],
+    },
+    {
+      heading: "What to check before you merge",
+      paragraphs: [
+        "A couple of things are easy to miss and annoying to fix after the fact:",
+      ],
+      list: [
+        "Page order — double check which file should come first, especially with more than two documents.",
+        "Rotated or sideways pages — fix these before merging, since a merged file with mixed orientations is harder to clean up afterward.",
+        "File size — very large merges (dozens of scanned pages) can take longer to process; splitting into two merges is sometimes faster than one giant one.",
+        "Password-protected files — a locked PDF needs to be unlocked before it can be merged with anything else.",
+      ],
+    },
+    {
+      heading: "Frequently Asked Questions",
+      paragraphs: [
+        "Can I merge a PDF with a JPG or PNG image? Yes — FlowPDF can combine PDFs and images in the same merge. Just upload both file types and describe the order you want, like \"put the cover.jpg first, then the contract.pdf.\"",
+        "Is there a limit to how many files I can merge at once? No hard limit for typical use — combining a handful to a few dozen files works the same way as combining two. Very large batches (hundreds of scanned pages) will simply take longer to process.",
+        "Will merging reduce the quality of my PDFs? No. Merging combines the files as they are; it doesn't re-compress or re-encode the content, so quality stays identical to the originals.",
+        "Can I merge PDFs on my phone? Yes — since this runs in the browser rather than through installed software, it works the same on a phone or tablet as it does on a desktop computer.",
+        "Can I merge password-protected PDFs? Not directly — a locked file needs to be unlocked first, then it can be merged like any other PDF.",
+        "Does the merged file have a watermark or FlowPDF branding on it? No — the output is a clean, unmarked PDF with no watermark added.",
+      ],
+    },
+    {
+      heading: "Related PDF tasks",
+      paragraphs: [
+        "If some of the files you're combining have password protection, unlock them first so they can be merged. Once everything's combined into one file, adding page numbers makes it easier to reference specific sections, and if the final document needs to go out securely, password protecting the merged file is a quick last step.",
+      ],
+    },
+  ],
+},
   {
     slug: "rotate-pdf-pages-online",
     title: "How to Rotate a PDF Page Online for Free",
